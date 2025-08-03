@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+*storybook.log
+storybook-static
+
+# overly bloated files
+package-lock.json
+node_modules

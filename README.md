@@ -1,70 +1,42 @@
-# Getting Started with Create React App
+# Pokémon Project using Python and React (Pokémon API) using Storybook for UI components
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a Pokémon-themed application built with Python for the backend and React for the frontend. It utilizes the Pokémon API to fetch data about various Pokémon, which is then displayed in a user-friendly interface. The project also incorporates Storybook for developing and testing UI components in isolation.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Fetch and display Pokémon data using the Pokémon API
+- User-friendly interface built with React
+- Isolated component development and testing using Storybook
 
-### `npm start`
+## Button Components
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Type Buttons
+These buttons represent the different Pokémon types (e.g., Fire, Water, Grass) and can be toggled on or off. Up to two buttons may be active at a time.
+This allows users to filter Pokémon by type. There are only type combinations of two types, so the buttons are designed to handle this limitation.
+### Active Button State
+When a button is active, it will have a distinct style to indicate that it is selected. The active state can be toggled by clicking the button again.
+### Button Styles
+The buttons are styled to be visually appealing and consistent with the Pokémon theme. They change appearance when active or inactive, providing clear feedback to the user.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Getting Started
+### Prerequisites
+- Python 3.x
+- Node.js and npm
+- React
+### Installation (I plan to have the application containerized with Docker in the future...)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/JasonHunter95/pokemon-project.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd pokemon-project
+   ```
+3. Install the backend dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Install the frontend dependencies:
+   ```bash
+   npm install
+   ```  
