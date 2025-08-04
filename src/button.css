@@ -1,0 +1,16 @@
+/* General button styles */
+
+.type-button {
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  color: #fff;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.type-button.selected {
+  outline: 3px solid #333;
+  transform: scale(1.1);
+}
