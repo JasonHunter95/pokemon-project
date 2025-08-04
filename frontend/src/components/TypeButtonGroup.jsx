@@ -19,7 +19,6 @@ const POKEMON_TYPES = [
   { type: 'Ground', color: '#E2BF65' },
   { type: 'Rock', color: '#B6A136' },
   { type: 'Bug', color: '#A6B91A' },
-  { type: 'Ghost', color: '#735797' },
   { type: 'Steel', color: '#B7B7CE' }    
 ];
 
