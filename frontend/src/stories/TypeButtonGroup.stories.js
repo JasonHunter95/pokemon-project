@@ -1,5 +1,5 @@
 import React from 'react';
-import TypeButtonGroup from '../TypeButtonGroup';
+import TypeButtonGroup from '../components/TypeButtonGroup';
 
 export default {
   title: 'Pokemon/TypeButtonGroup',
@@ -15,6 +15,7 @@ export default {
         }
     }
 };
+// basic usage of TypeButtonGroup component
 export const Default = () => <TypeButtonGroup />;
 
 // With a callback to show type selection
@@ -24,10 +25,17 @@ export const WithCallback = () => (
      />
 );
 
-// Wrapped in a container with styling
-export const WithStyling = () => (
-  <div style={{ padding: '20px', backgroundColor: '#f0f0f0', borderRadius: '10px' }}>
-    <h3>Choose Your Pokemon Type(s)</h3>
+// Styled example in context
+export const InContext = () => (
+  <div style={{ 
+    padding: '20px', 
+    background: '#2a2a2a', 
+    borderRadius: '10px',
+    color: 'white',
+    maxWidth: '600px'
+  }}>
+    <h3>Pokémon Type Selector</h3>
+    <p style={{ fontSize: '14px' }}>Select up to two types to find matching Pokémon</p>
     <TypeButtonGroup />
   </div>
 );
