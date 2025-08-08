@@ -99,3 +99,9 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
   ```bash
   npm run storybook
   ```
+
+- You can also run Storybook using the provided batch script from the 'root':
+
+  ```bash
+  ./run-storybook.bat
+  ```
