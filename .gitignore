@@ -28,3 +28,6 @@ storybook-static
 # overly bloated files
 *package-lock.json*
 *node_modules*
+
+# pycache
+__pycache__/
