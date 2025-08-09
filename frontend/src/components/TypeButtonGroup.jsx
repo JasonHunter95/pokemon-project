@@ -22,20 +22,23 @@ const POKEMON_TYPES = [
   { type: 'Steel', color: '#B7B7CE' }    
 ];
 
-export default function TypeButtonGroup({ onTypeSelect }) {
+export default function TypeButtonGroup({ onTypeSelect, onSelectionChange }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
 
   const handleTypeClick = (type) => {
     setSelectedTypes((prev) => {
+      let next;
       if (prev.includes(type)) {
-        return prev.filter((t) => t !== type);
+        next = prev.filter((t) => t !== type);
       } else if (prev.length < 2) {
-        return [...prev, type];
+        next = [...prev, type];
       } else {
-        return [prev[1], type]; // unselect the previous first type if already two selected
-      }                         // this keeps the last two selected types
+        next = [prev[1], type]; // unselect the previous first type if already two selected
+      }              // this keeps the last two selected types
+      onTypeSelect && onTypeSelect(type);
+      onSelectionChange && onSelectionChange(next);
+      return next;
     });
-    onTypeSelect && onTypeSelect(type);
   };
 
   return (
