@@ -11,6 +11,12 @@ This is the backend service for the Pokemon Project, built with FastAPI to provi
 - [Setup & Installation](#setup--installation)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
+- [Response Shape](#response-shape)
+- [Filtering Semantics](#filtering-semantics)
+- [Examples](#examples)
+- [Sample Data Mode](#sample-data-mode)
+- [Status Codes](#status-codes)
+- [Caching Notes](#caching-notes)
 
 ## Features
 
@@ -111,3 +117,68 @@ Once the server is running, auto-generated API documentation can be found at:
 
 - **Swagger UI**: (<http://localhost:8000/docs>)
 - **Redoc Documentation**: (<http://localhost:8000/redoc>)
+
+## Response Shape
+
+To support the frontend card UI, the list endpoint guarantees a minimal “PokemonSummary” shape for each item:
+
+```json
+{
+  "id": 25,
+  "name": "pikachu",
+  "types": ["electric"],
+  "sprites": {
+    "front_default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+  }
+}
+```
+
+Notes:
+
+- types are lowercase strings.
+- sprites.front_default may be null if no sprite is available.
+
+The detail endpoint GET /pokemon/{name_or_id} returns additional fields, but at minimum includes the same properties above.
+
+## Filtering Semantics
+
+- search: Case-insensitive partial match on name. Numeric searches match exact ID (e.g., search=25 returns the Pokémon with id 25).
+- types: Comma-separated list uses AND semantics. A Pokémon must include all listed types to match (e.g., types=grass,poison returns dual-type Grass/Poison Pokémon).
+- Pagination: limit and offset apply after filters. Default limit is 20. Typical bounds are 1–100.
+
+Results are returned in a stable order (by id ascending) unless otherwise specified.
+
+## Examples
+
+- Search by name:
+  curl "<http://localhost:8000/pokemon?search=pika&limit=20&offset=0>"
+
+- Search by ID (as text):
+  curl "<http://localhost:8000/pokemon?search=25>"
+
+- Filter by one type:
+  curl "<http://localhost:8000/pokemon?types=fairy>"
+
+- Filter by two types (AND):
+  curl "<http://localhost:8000/pokemon?types=grass,poison>"
+
+- Combine search and types:
+  curl "<http://localhost:8000/pokemon?search=char&types=fire&limit=12>"
+
+## Sample Data Mode
+
+When USE_SAMPLE_DATA=true:
+
+- The dataset includes id, name, types, and sprites.front_default for common Pokémon to ensure the card UI renders images.
+- If a sprite is missing, sprites.front_default may be null (frontend shows a placeholder).
+
+## Status Codes
+
+- 200: Successful response.
+- 400: Invalid query parameters (e.g., non-numeric limit/offset, out-of-range limit).
+- 404: GET /pokemon/{name_or_id} not found.
+- 5xx: Upstream or internal errors (may be served from cache if available).
+
+## Caching Notes
+
+Responses may be cached according to CACHE_TTL_SECONDS. Cached responses still respect query parameters (search, types, limit, offset) as part of the cache key.
