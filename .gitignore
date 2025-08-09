@@ -39,3 +39,4 @@ backend/__pycache__/main.cpython-311.pyc
 .env.development.local
 .env.test.local
 .env.production.local
+*.env*
