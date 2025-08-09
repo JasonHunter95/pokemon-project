@@ -33,3 +33,9 @@ storybook-static
 __pycache__/
 backend/__pycache__/main.cpython-311.pyc
 
+
+# secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
