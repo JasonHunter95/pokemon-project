@@ -80,7 +80,7 @@ Using Docker:
 The backend can be run in a Docker container using the provided Dockerfile:
 
 1. Build the Docker image:
-S
+
     ```bash
     docker build -f Dockerfile.backend.dev -t pokemon-backend .
     ```
