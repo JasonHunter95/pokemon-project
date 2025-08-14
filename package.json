@@ -13,8 +13,11 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,jsx,css,md,json}": "prettier --write",
-    "frontend/src/**/*.{js,jsx}": "npm --prefix frontend run lint",
+    "*": "prettier --write --ignore-unknown",
+    "frontend/src/**/*.{js,jsx}": [
+      "npm --prefix frontend run lint",
+      "eslint --fix"
+    ],
     "backend/**/*.py": [
       "python -m ruff check --fix --unsafe-fixes",
       "python -m mypy"
