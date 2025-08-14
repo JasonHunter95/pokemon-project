@@ -5,7 +5,6 @@ export default function SearchBar({
   placeholder = 'Search Pokémon...',
   onSearch,
   className = '',
-  autoFocus = false,
   initialValue = '',
   size = 'default', // new size prop with default value
 }) {
@@ -47,7 +46,6 @@ export default function SearchBar({
           type="text"
           value={searchTerm}
           onChange={handleInputChange}
-          autoFocus={autoFocus}
         />
         {searchTerm && (
           <button
