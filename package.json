@@ -1,6 +1,14 @@
 {
   "devDependencies": {
     "@prettier/plugin-python": "^0.0.0-development",
+    "husky": "^9.1.7",
     "prettier": "^3.6.2"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "npm run lint:js && npm run lint:py",
+    "lint:js": "eslint ./frontend/src",
+    "lint:py": "ruff check ./backend",
+    "prepare": "husky"
   }
 }
