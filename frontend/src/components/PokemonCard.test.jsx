@@ -6,7 +6,10 @@ const pokemon = {
   id: 25,
   name: 'pikachu',
   types: ['electric'],
-  sprites: { front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png' },
+  sprites: {
+    front_default:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+  },
 };
 
 test('renders name, id, image, and type chips', () => {

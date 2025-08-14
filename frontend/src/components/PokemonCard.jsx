@@ -19,9 +19,9 @@ const placeholderSvg =
 
 export default function PokemonCard({
   pokemon,
-  onTypeClick,        // (type: string) => void
-  linkHref,           // optional: default `/pokemon/${id}`
-  onOpen,             // optional: callback when clicking the card/name
+  onTypeClick, // (type: string) => void
+  linkHref, // optional: default `/pokemon/${id}`
+  onOpen, // optional: callback when clicking the card/name
   className = '',
   ...rest
 }) {
@@ -41,7 +41,11 @@ export default function PokemonCard({
           <img
             className="sprite"
             src={imgSrc}
-            alt={imgSrc === placeholderSvg ? `${capitalize(name)} sprite not available` : `${capitalize(name)} sprite`}
+            alt={
+              imgSrc === placeholderSvg
+                ? `${capitalize(name)} sprite not available`
+                : `${capitalize(name)} sprite`
+            }
             loading="lazy"
             width="128"
             height="128"

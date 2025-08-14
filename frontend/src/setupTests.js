@@ -8,8 +8,11 @@ let ReadableStream, WritableStream, TransformStream;
 try {
   ({ ReadableStream, WritableStream, TransformStream } = require('stream/web'));
 } catch {
-  ({ ReadableStream, WritableStream, TransformStream } =
-    require('web-streams-polyfill/ponyfill/es2018'));
+  ({
+    ReadableStream,
+    WritableStream,
+    TransformStream,
+  } = require('web-streams-polyfill/ponyfill/es2018'));
 }
 if (!global.ReadableStream) global.ReadableStream = ReadableStream;
 if (!global.WritableStream) global.WritableStream = WritableStream;

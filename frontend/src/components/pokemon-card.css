@@ -3,7 +3,9 @@
   border-radius: 12px;
   box-shadow: 0 2px 10px rgb(0 0 0 / 8%);
   padding: 12px;
-  transition: box-shadow 120ms ease, transform 120ms ease;
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease;
   outline: none;
 }
 
@@ -49,7 +51,7 @@
 
 .id {
   color: #888;
-  font-feature-settings: "tnum";
+  font-feature-settings: 'tnum';
 }
 
 .types {
@@ -75,23 +77,74 @@
 }
 
 /* Example type colors; add remaining as needed */
-.type-fire { background: #f08030; color: #fff; }
-.type-water { background: #6890f0; color: #fff; }
-.type-grass { background: #78c850; color: #fff; }
-.type-electric { background: #f8d030; color: #333; }
-.type-ice { background: #98d8d8; color: #333; }
-.type-fighting { background: #c03028; color: #fff; }
-.type-poison { background: #a040a0; color: #fff; }
-.type-ground { background: #e0c068; color: #333; }
-.type-flying { background: #a890f0; color: #fff; }
-.type-psychic { background: #f85888; color: #fff; }
-.type-bug { background: #a8b820; color: #fff; }
-.type-rock { background: #b8a038; color: #fff; }
-.type-ghost { background: #705898; color: #fff; }
-.type-dragon { background: #7038f8; color: #fff; }
-.type-dark { background: #705848; color: #fff; }
-.type-steel { background: #b8b8d0; color: #333; }
-.type-fairy { background: #ee99ac; color: #333; }
+.type-fire {
+  background: #f08030;
+  color: #fff;
+}
+.type-water {
+  background: #6890f0;
+  color: #fff;
+}
+.type-grass {
+  background: #78c850;
+  color: #fff;
+}
+.type-electric {
+  background: #f8d030;
+  color: #333;
+}
+.type-ice {
+  background: #98d8d8;
+  color: #333;
+}
+.type-fighting {
+  background: #c03028;
+  color: #fff;
+}
+.type-poison {
+  background: #a040a0;
+  color: #fff;
+}
+.type-ground {
+  background: #e0c068;
+  color: #333;
+}
+.type-flying {
+  background: #a890f0;
+  color: #fff;
+}
+.type-psychic {
+  background: #f85888;
+  color: #fff;
+}
+.type-bug {
+  background: #a8b820;
+  color: #fff;
+}
+.type-rock {
+  background: #b8a038;
+  color: #fff;
+}
+.type-ghost {
+  background: #705898;
+  color: #fff;
+}
+.type-dragon {
+  background: #7038f8;
+  color: #fff;
+}
+.type-dark {
+  background: #705848;
+  color: #fff;
+}
+.type-steel {
+  background: #b8b8d0;
+  color: #333;
+}
+.type-fairy {
+  background: #ee99ac;
+  color: #333;
+}
 
 /* Skeleton states */
 .pokemon-card.skeleton .image-wrap {
@@ -109,6 +162,10 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: 0 0; }
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }

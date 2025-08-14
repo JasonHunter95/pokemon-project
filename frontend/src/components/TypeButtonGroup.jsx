@@ -19,7 +19,7 @@ const POKEMON_TYPES = [
   { type: 'Ground', color: '#E2BF65' },
   { type: 'Rock', color: '#B6A136' },
   { type: 'Bug', color: '#A6B91A' },
-  { type: 'Steel', color: '#B7B7CE' }    
+  { type: 'Steel', color: '#B7B7CE' },
 ];
 
 export default function TypeButtonGroup({ onTypeSelect, onSelectionChange }) {
@@ -34,7 +34,7 @@ export default function TypeButtonGroup({ onTypeSelect, onSelectionChange }) {
         next = [...prev, type];
       } else {
         next = [prev[1], type]; // unselect the previous first type if already two selected
-      }              // this keeps the last two selected types
+      } // this keeps the last two selected types
       onTypeSelect && onTypeSelect(type);
       onSelectionChange && onSelectionChange(next);
       return next;

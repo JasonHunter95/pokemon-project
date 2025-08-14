@@ -63,9 +63,7 @@ function App() {
 
         <SearchBar onSearch={handleSearch} />
 
-        {searchTerm && (
-          <p>You searched for: {searchTerm}</p>
-        )}
+        {searchTerm && <p>You searched for: {searchTerm}</p>}
 
         <TypeButtonGroup onSelectionChange={handleTypesChange} />
 
@@ -109,10 +107,8 @@ function App() {
         )}
 
         <p>
-          Select up to two Pokemon types.
-          Click on a type to select or deselect it.
-          Selected types will be highlighted.
-          Try selecting different combinations!
+          Select up to two Pokemon types. Click on a type to select or deselect it. Selected types
+          will be highlighted. Try selecting different combinations!
         </p>
       </header>
     </div>

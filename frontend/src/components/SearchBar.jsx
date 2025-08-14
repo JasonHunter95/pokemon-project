@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import './searchbar.css';
 
-export default function SearchBar({ 
-  placeholder = "Search Pokémon...", 
-  onSearch, 
-  className = "",
+export default function SearchBar({
+  placeholder = 'Search Pokémon...',
+  onSearch,
+  className = '',
   autoFocus = false,
-  initialValue = "",
-  size = "default" // new size prop with default value
+  initialValue = '',
+  size = 'default', // new size prop with default value
 }) {
   const [searchTerm, setSearchTerm] = useState(initialValue);
-  
+
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -27,14 +27,14 @@ export default function SearchBar({
   };
 
   const handleClear = () => {
-    setSearchTerm("");
+    setSearchTerm('');
     if (onSearch) {
-      onSearch("");
+      onSearch('');
     }
   };
 
   // Create size class based on the size prop
-  const sizeClass = size !== "default" ? `size-${size}` : "";
+  const sizeClass = size !== 'default' ? `size-${size}` : '';
 
   return (
     <form className={`search-container ${sizeClass} ${className}`} onSubmit={handleSubmit}>
@@ -50,8 +50,8 @@ export default function SearchBar({
           autoFocus={autoFocus}
         />
         {searchTerm && (
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="search-clear-btn"
             onClick={handleClear}
             aria-label="Clear search"
@@ -60,7 +60,9 @@ export default function SearchBar({
           </button>
         )}
       </div>
-      <button type="submit" className="search-button">Search</button>
+      <button type="submit" className="search-button">
+        Search
+      </button>
     </form>
   );
 }

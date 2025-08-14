@@ -7,8 +7,8 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "npm run lint:js && npm run lint:py",
-    "lint:js": "eslint ./frontend/src",
-    "lint:py": "ruff check ./backend",
+    "lint:js": "npm --prefix frontend run lint",
+    "lint:py": "ruff check ./backend --fix --unsafe-fixes",
     "prepare": "husky"
   }
 }

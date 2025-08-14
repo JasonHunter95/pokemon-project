@@ -59,43 +59,43 @@ For local development, you can run the FastAPI application using Uvicorn:
 1. Clone the repo.
 2. Navigate to the backend directory.
 
-    ```bash
-    cd pokemon-project/backend
-    ```
+   ```bash
+   cd pokemon-project/backend
+   ```
 
 3. Create a virtual environment and activate it:
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
 
 4. Install the required dependencies:
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 5. Run the server:
 
-    ```bash
-    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-    ```
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
 
 Using Docker:
 The backend can be run in a Docker container using the provided Dockerfile:
 
 1. Build the Docker image:
 
-    ```bash
-    docker build -f Dockerfile.backend.dev -t pokemon-backend .
-    ```
+   ```bash
+   docker build -f Dockerfile.backend.dev -t pokemon-backend .
+   ```
 
 2. Run the Docker container:
 
-    ```bash
-    docker run -p 8000:8000 pokemon-backend
-    ```
+   ```bash
+   docker run -p 8000:8000 pokemon-backend
+   ```
 
 Or using docker-compose from the project's root:
 
