@@ -1,0 +1,11 @@
+# Ignore build output and dependencies
+/build
+/node_modules
+/storybook-static
+
+# Ignore environment files
+.env*
+
+# Python virtual environment
+.venv/
+__pycache__/

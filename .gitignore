@@ -26,7 +26,6 @@ yarn-error.log*
 storybook-static
 
 # overly bloated files
-*package-lock.json*
 *node_modules*
 
 # pycache
@@ -40,3 +39,7 @@ backend/__pycache__/main.cpython-311.pyc
 .env.test.local
 .env.production.local
 *.env*
+frontend/.env*
+
+# .ruff_cache
+.ruff_cache/

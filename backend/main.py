@@ -1,7 +1,7 @@
 import asyncio
 import os
 import time
-from typing import List, Optional, Dict, Any
+from typing import Any, Optional
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query
@@ -25,7 +25,7 @@ app.add_middleware(
 
 # Caching mechanism
 _http_client: httpx.AsyncClient | None = None
-_cache: Dict[str, tuple[float, Any]] = {}
+_cache: dict[str, tuple[float, Any]] = {}
 
 def _cache_get(key: str):
     ent = _cache.get(key)
@@ -124,7 +124,7 @@ async def get_types():
     """Get all available Pokemon types"""
     if USE_SAMPLE_DATA:
         return [t["name"] for t in SAMPLE_POKEMON_TYPES]
-    
+
     data = await _get_json(f"{POKEAPI_BASE}/type")
     # Filter out shadow/unknown if present
     names = [t["name"] for t in data.get("results", []) if t["name"] not in {"shadow", "unknown"}]
@@ -140,12 +140,15 @@ async def get_one(name_or_id: str):
             pokemon = next((p for p in SAMPLE_POKEMONS if p["id"] == pokemon_id), None)
         except ValueError:
             # Not an integer, try name match
-            pokemon = next((p for p in SAMPLE_POKEMONS if p["name"].lower() == name_or_id.lower()), None)
-        
+            pokemon = next(
+                (p for p in SAMPLE_POKEMONS if p["name"].lower() == name_or_id.lower()),
+                None,
+            )
+
         if pokemon:
             return pokemon
         raise HTTPException(status_code=404, detail="Pokemon not found")
-    
+
     try:
         return await _fetch_pokemon_detail(name_or_id.lower())
     except HTTPException:
@@ -163,20 +166,20 @@ async def list_pokemon(
     """List Pokemon with optional filtering by search term or types"""
     if USE_SAMPLE_DATA:
         results = SAMPLE_POKEMONS.copy()
-        
+
         # Filter by search term if provided
         if search:
             results = [p for p in results if search.lower() in p["name"].lower()]
-        
+
         # Filter by types if provided
         if types:
             type_list = [t.strip().lower() for t in types.split(",") if t.strip()]
             if type_list:
                 results = [p for p in results if any(t in p["types"] for t in type_list)]
-        
+
         # Apply pagination
         return results[offset:offset + limit]
-    
+
     # Using real PokeAPI
     # search takes precedence
     if search:
@@ -188,7 +191,7 @@ async def list_pokemon(
                 return []
             raise
 
-    type_list: List[str] = []
+    type_list: list[str] = []
     if types:
         type_list = [t.strip().lower() for t in types.split(",") if t.strip()]
 
@@ -201,7 +204,7 @@ async def list_pokemon(
                 names = {entry["pokemon"]["name"] for entry in td.get("pokemon", [])}
                 type_pokemon_sets.append(names)
             if not type_pokemon_sets:
-                candidates: List[str] = []
+                candidates: list[str] = []
             else:
                 inter = set.intersection(*type_pokemon_sets)
                 candidates = sorted(list(inter))

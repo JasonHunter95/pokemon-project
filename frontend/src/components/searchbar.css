@@ -61,7 +61,7 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #6390F0;
+  border-color: #6390f0;
   box-shadow: 0 0 0 2px rgba(99, 144, 240, 0.3);
 }
 
@@ -88,7 +88,7 @@
 .search-button {
   margin-left: 10px;
   padding: 12px 20px;
-  background-color: #6390F0;
+  background-color: #6390f0;
   color: white;
   border: none;
   border-radius: 20px;
@@ -106,7 +106,7 @@
   .search-container {
     flex-direction: column;
   }
-  
+
   .search-button {
     margin-left: 0;
     margin-top: 10px;

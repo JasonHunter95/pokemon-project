@@ -1,0 +1,171 @@
+.pokemon-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 8%);
+  padding: 12px;
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease;
+  outline: none;
+}
+
+.pokemon-card:focus-within {
+  box-shadow: 0 0 0 3px #64b5f6;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+}
+
+.card-link {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.image-wrap {
+  display: grid;
+  place-items: center;
+  background: #fafafa;
+  border-radius: 8px;
+  min-height: 140px;
+}
+
+.sprite {
+  image-rendering: auto;
+  object-fit: contain;
+  width: 128px;
+  height: 128px;
+}
+
+.title {
+  font-size: 1rem;
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.id {
+  color: #888;
+  font-feature-settings: 'tnum';
+}
+
+.types {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.type-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  background: #eee;
+  color: #333;
+  cursor: pointer;
+}
+
+.type-chip:focus-visible {
+  outline: 3px solid #64b5f6;
+  outline-offset: 2px;
+}
+
+/* Example type colors; add remaining as needed */
+.type-fire {
+  background: #f08030;
+  color: #fff;
+}
+.type-water {
+  background: #6890f0;
+  color: #fff;
+}
+.type-grass {
+  background: #78c850;
+  color: #fff;
+}
+.type-electric {
+  background: #f8d030;
+  color: #333;
+}
+.type-ice {
+  background: #98d8d8;
+  color: #333;
+}
+.type-fighting {
+  background: #c03028;
+  color: #fff;
+}
+.type-poison {
+  background: #a040a0;
+  color: #fff;
+}
+.type-ground {
+  background: #e0c068;
+  color: #333;
+}
+.type-flying {
+  background: #a890f0;
+  color: #fff;
+}
+.type-psychic {
+  background: #f85888;
+  color: #fff;
+}
+.type-bug {
+  background: #a8b820;
+  color: #fff;
+}
+.type-rock {
+  background: #b8a038;
+  color: #fff;
+}
+.type-ghost {
+  background: #705898;
+  color: #fff;
+}
+.type-dragon {
+  background: #7038f8;
+  color: #fff;
+}
+.type-dark {
+  background: #705848;
+  color: #fff;
+}
+.type-steel {
+  background: #b8b8d0;
+  color: #333;
+}
+.type-fairy {
+  background: #ee99ac;
+  color: #333;
+}
+
+/* Skeleton states */
+.pokemon-card.skeleton .image-wrap {
+  background: linear-gradient(90deg, #f2f2f2 25%, #e9e9e9 37%, #f2f2f2 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  min-height: 140px;
+}
+
+.pokemon-card.skeleton .title,
+.pokemon-card.skeleton .types {
+  height: 16px;
+  background: #eee;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}

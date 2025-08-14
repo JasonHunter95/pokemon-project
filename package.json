@@ -1,0 +1,23 @@
+{
+  "devDependencies": {
+    "@prettier/plugin-python": "^0.0.0-development",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.6.2"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "npm run lint:js && npm run lint:py",
+    "lint:js": "npm --prefix frontend run lint",
+    "lint:py": "ruff check ./backend --fix --unsafe-fixes",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,md,json}": "prettier --write",
+    "frontend/src/**/*.{js,jsx}": "npm --prefix frontend run lint",
+    "backend/**/*.py": [
+      "python -m ruff check --fix --unsafe-fixes",
+      "python -m mypy"
+    ]
+  }
+}

@@ -7,6 +7,11 @@ This project is a Pokémon-themed application built with Python for the backend 
 - Fetch and display Pokémon data using the Pokémon API
 - User-friendly interface built with React
 - Isolated component development and testing using Storybook
+- Search by name or ID and filter by up to two types
+- Card-based results grid (image, name, ID, and type chips)
+- Inline actions on cards: type chip refines filters; card/name links to details (stub link until routing)
+- Clear loading (skeletons), empty, and error states
+- Accessibility: labeled controls, descriptive alt text, and visible focus indicators
 
 ## Button Components
 
@@ -23,6 +28,12 @@ When a button is active, it will have a distinct style to indicate that it is se
 
 The buttons are styled to be visually appealing and consistent with the Pokémon theme. They change appearance when active or inactive, providing clear feedback to the user.
 
+### Card Components
+
+- Pokémon cards display a sprite, ID, name, and clickable type chips in a responsive grid.
+- Missing sprites are handled with a placeholder image.
+- Cards and names link to “/pokemon/:id” (stub until routing is added).
+
 ## Getting Started
 
 ### Prerequisites
@@ -30,6 +41,7 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
 - Python 3.x
 - Node.js and npm
 - React
+- Docker Desktop (for the Docker-based workflow)
 
 ### Installation
 
@@ -105,3 +117,22 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
   ```bash
   ./run-storybook.bat
   ```
+
+### Running Tests
+
+- Frontend unit/integration tests with RTL and MSW:
+
+```bash
+cd frontend
+npm test
+```
+
+### Configuration
+
+- Frontend: `REACT_APP_API_BASE` (default: `http://localhost:8000`)
+- Backend: see backend README for environment variables
+
+## Documentation Links
+
+- Frontend details: `frontend/README.frontend.md`
+- Backend details: `backend/README.backend.md`
