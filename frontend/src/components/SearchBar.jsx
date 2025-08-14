@@ -41,9 +41,10 @@ export default function SearchBar({
       <div className="search-wrapper">
         <span className="search-icon">🔍</span>
         <input
-          type="text"
           className="search-input"
-          placeholder={placeholder}
+          aria-label="Search"
+          placeholder="Search Pokémon..."
+          type="text"
           value={searchTerm}
           onChange={handleInputChange}
           autoFocus={autoFocus}
