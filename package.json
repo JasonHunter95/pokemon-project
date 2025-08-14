@@ -10,7 +10,8 @@
     "lint": "npm run lint:js && npm run lint:py",
     "lint:js": "npm --prefix frontend run lint",
     "lint:py": "ruff check ./backend --fix --unsafe-fixes",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "npm --prefix frontend run storybook"
   },
   "lint-staged": {
     "*": "prettier --write --ignore-unknown",
