@@ -106,16 +106,10 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
 
 ### Running Storybook
 
-- To run Storybook for isolated component development, navigate to the `frontend` directory and run:
+- To run Storybook for isolated component development, run:
 
   ```bash
   npm run storybook
-  ```
-
-- You can also run Storybook using the provided batch script from the 'root':
-
-  ```bash
-  ./run-storybook.bat
   ```
 
 ### Running Tests
