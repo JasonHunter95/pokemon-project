@@ -48,3 +48,18 @@ async def get_pokemon(
     except Exception:
         # Generic error for other unexpected issues
         raise HTTPException(status_code=500, detail="An internal server error occurred.")
+
+@router.get("/{name_or_id}")
+async def get_pokemon_detail(
+    name_or_id: str,
+    service: PokeAPIService = Depends(get_pokeapi_service),
+):
+    """Get detailed info for a specific Pokémon by name or ID."""
+    try:
+        return await service.get_pokemon_detail(name_or_id)
+    except httpx.HTTPStatusError as e:
+        if e.response is not None and e.response.status_code == 404:
+            raise HTTPException(status_code=404, detail="Pokemon not found")
+        raise HTTPException(status_code=502, detail="Upstream PokeAPI error")
+    except Exception:
+        raise HTTPException(status_code=500, detail="An internal server error occurred.")

@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
+import { renderWithRouter } from '../test/renderWithRouter';
 import PokemonCard from './PokemonCard';
 
 const pokemon = {
@@ -13,7 +14,7 @@ const pokemon = {
 };
 
 test('renders name, id, image, and type chips', () => {
-  render(<PokemonCard pokemon={pokemon} />);
+  renderWithRouter(<PokemonCard pokemon={pokemon} />);
   expect(screen.getByText(/#25/i)).toBeInTheDocument();
   expect(screen.getByText(/pikachu/i)).toBeInTheDocument();
   expect(screen.getByRole('img', { name: /pikachu sprite/i })).toBeInTheDocument();
@@ -22,18 +23,18 @@ test('renders name, id, image, and type chips', () => {
 
 test('calls onTypeClick when clicking a type chip', () => {
   const onTypeClick = jest.fn();
-  render(<PokemonCard pokemon={pokemon} onTypeClick={onTypeClick} />);
+  renderWithRouter(<PokemonCard pokemon={pokemon} onTypeClick={onTypeClick} />);
   fireEvent.click(screen.getByRole('button', { name: /filter by electric type/i }));
   expect(onTypeClick).toHaveBeenCalledWith('electric');
 });
 
 test('falls back when sprite missing', () => {
-  render(<PokemonCard pokemon={{ ...pokemon, sprites: { front_default: '' } }} />);
+  renderWithRouter(<PokemonCard pokemon={{ ...pokemon, sprites: { front_default: '' } }} />);
   expect(screen.getByRole('img', { name: /sprite not available/i })).toBeInTheDocument();
 });
 
 test('links to details via anchor', () => {
-  render(<PokemonCard pokemon={pokemon} linkHref="/pokemon/25" />);
+  renderWithRouter(<PokemonCard pokemon={pokemon} linkHref="/pokemon/25" />);
   const link = screen.getByRole('link', { name: /view details/i });
   expect(link).toHaveAttribute('href', '/pokemon/25');
 });
