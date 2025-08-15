@@ -1,66 +1,43 @@
 import React, { useState } from 'react';
-import './searchbar.css';
+import './SearchBar.css';
 
-export default function SearchBar({
-  placeholder = 'Search Pokémon...',
-  onSearch,
-  className = '',
-  initialValue = '',
-  size = 'default', // new size prop with default value
-}) {
-  const [searchTerm, setSearchTerm] = useState(initialValue);
-
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    if (onSearch) {
-      onSearch(value);
-    }
-  };
+const SearchBar = ({ onSearch, onClear, isSearchMode }) => {
+  const [query, setQuery] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSearch) {
-      onSearch(searchTerm);
-    }
+    onSearch(query);
   };
 
   const handleClear = () => {
-    setSearchTerm('');
-    if (onSearch) {
-      onSearch('');
-    }
+    setQuery('');
+    onClear();
   };
 
-  // Create size class based on the size prop
-  const sizeClass = size !== 'default' ? `size-${size}` : '';
-
   return (
-    <form className={`search-container ${sizeClass} ${className}`} onSubmit={handleSubmit}>
-      <div className="search-wrapper">
-        <span className="search-icon">🔍</span>
-        <input
-          className="search-input"
-          aria-label="Search"
-          placeholder="Search Pokémon..."
-          type="text"
-          value={searchTerm}
-          onChange={handleInputChange}
-        />
-        {searchTerm && (
-          <button
-            type="button"
-            className="search-clear-btn"
-            onClick={handleClear}
-            aria-label="Clear search"
-          >
-            ×
+    <div className="search-bar">
+      <form onSubmit={handleSubmit}>
+        <div className="search-input-group">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search Pokemon by name..."
+            className="search-input"
+            aria-label="Search"
+          />
+          <button type="submit" className="search-button">
+            🔍 Search
           </button>
-        )}
-      </div>
-      <button type="submit" className="search-button">
-        Search
-      </button>
-    </form>
+          {isSearchMode && (
+            <button type="button" onClick={handleClear} className="clear-button">
+              ✕ Clear
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
-}
+};
+
+export default SearchBar;

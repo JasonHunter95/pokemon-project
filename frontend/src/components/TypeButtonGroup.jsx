@@ -1,29 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TypeButton from './TypeButton';
-
-const POKEMON_TYPES = [
-  { type: 'Fire', color: '#EE8130' },
-  { type: 'Water', color: '#6390F0' },
-  { type: 'Grass', color: '#7AC74C' },
-  { type: 'Electric', color: '#F7D02C' },
-  { type: 'Psychic', color: '#F95587' },
-  { type: 'Dark', color: '#705746' },
-  { type: 'Fairy', color: '#D685AD' },
-  { type: 'Ghost', color: '#735797' },
-  { type: 'Normal', color: '#A8A77A' },
-  { type: 'Fighting', color: '#C22E28' },
-  { type: 'Flying', color: '#A98FF3' },
-  { type: 'Poison', color: '#A33EA1' },
-  { type: 'Ice', color: '#96D9D6' },
-  { type: 'Dragon', color: '#6F35FC' },
-  { type: 'Ground', color: '#E2BF65' },
-  { type: 'Rock', color: '#B6A136' },
-  { type: 'Bug', color: '#A6B91A' },
-  { type: 'Steel', color: '#B7B7CE' },
-];
 
 export default function TypeButtonGroup({ onTypeSelect, onSelectionChange }) {
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTypes() {
+      try {
+        setLoading(true);
+        setError(null);
+        // Adjust the URL if your backend is mounted under a prefix
+        const res = await fetch('/pokemon/types', { signal: controller.signal });
+        if (!res.ok) throw new Error(`Failed to fetch types: ${res.status}`);
+        const data = await res.json();
+
+        // Normalize if API returns strings or objects
+        const normalized = Array.isArray(data)
+          ? data.map((item) => (typeof item === 'string' ? { type: item, color: undefined } : item))
+          : [];
+
+        setTypes(normalized);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          setError('Failed to load Pokémon types.');
+          setTypes([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadTypes();
+    return () => controller.abort();
+  }, []);
 
   const handleTypeClick = (type) => {
     setSelectedTypes((prev) => {
@@ -41,13 +56,21 @@ export default function TypeButtonGroup({ onTypeSelect, onSelectionChange }) {
     });
   };
 
+  if (loading) {
+    return <div>Loading types...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div>
-      {POKEMON_TYPES.map(({ type, color }) => (
+      {types.map(({ type, color }) => (
         <TypeButton
           key={type}
           type={type}
-          color={color}
+          color={color || '#B7B7CE'}
           selected={selectedTypes.includes(type)}
           onClick={handleTypeClick}
         />

@@ -1,5 +1,5 @@
 import React from 'react';
-import './button.css';
+import './TypeButton.css';
 
 export default function TypeButton({ type, color, selected, onClick }) {
   return (

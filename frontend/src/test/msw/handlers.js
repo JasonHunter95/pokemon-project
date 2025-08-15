@@ -12,6 +12,10 @@ const makePokemon = (overrides = {}) => ({
 });
 
 export const handlers = [
+  rest.get('*/health', (req, res, ctx) => {
+    return res(ctx.json({ status: 'healthy' }));
+  }),
+
   // Match any origin for /pokemon
   rest.get('*/pokemon', (req, res, ctx) => {
     const search = req.url.searchParams.get('search') || '';

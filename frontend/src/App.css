@@ -1,38 +1,96 @@
-.App {
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.app-header {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border-radius: 12px;
+  position: relative;
 }
 
-.App-link {
-  color: #61dafb;
+.app-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-header p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.app-main {
+  min-height: 400px;
+}
+
+.api-status {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.api-status.healthy {
+  background: rgba(76, 175, 80, 0.8);
+}
+
+.api-error {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #dc3545;
+}
+
+.api-error h1 {
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.api-error code {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.api-error button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.api-error button:hover {
+  background: #5a6fd8;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.app-footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1rem;
+  border-top: 1px solid #e0e0e0;
+  color: #6c757d;
+  font-size: 0.9rem;
 }

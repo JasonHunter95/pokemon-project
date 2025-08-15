@@ -11,8 +11,8 @@ const config = {
     options: {},
   },
   staticDirs: [
-    '../public', // For MAC
-    // "..\\public" // For Windows
+    // '../public', // For MAC
+    '..\\public', // For Windows
   ],
 };
 export default config;

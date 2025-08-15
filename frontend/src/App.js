@@ -1,116 +1,136 @@
-// Example of how to use in App.js
-import React, { useEffect, useState } from 'react';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { usePokemonList, usePokemonSearch } from './hooks/usePokemon';
+import PokemonList from './components/PokemonList';
 import SearchBar from './components/SearchBar';
-import TypeButtonGroup from './components/TypeButtonGroup';
-import { fetchPokemon } from './api';
-import PokemonCard from './components/PokemonCard';
-import PokemonCardGrid from './components/PokemonCardGrid';
+import Pagination from './components/Pagination';
+import LoadingSpinner from './components/LoadingSpinner';
+import ErrorMessage from './components/ErrorMessage';
+import { API_BASE } from './API';
+import './App.css';
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [types, setTypes] = useState([]);
-  const [pokemon, setPokemon] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [searchMode, setSearchMode] = useState(false);
+  const [apiStatus, setApiStatus] = useState('checking');
 
-  const load = async ({ search = searchTerm, t = types } = {}) => {
-    try {
-      setLoading(true);
-      setError('');
-      const data = await fetchPokemon({ search, types: t, limit: 20, offset: 0 });
-      setPokemon(data);
-    } catch (e) {
-      console.error(e);
-      setPokemon([]);
-      setError('Failed to load Pokémon.');
-    } finally {
-      setLoading(false);
+  // Use custom hooks for Pokemon data
+  const {
+    pokemon,
+    loading: listLoading,
+    error: listError,
+    pagination,
+    nextPage,
+    previousPage,
+    reload,
+  } = usePokemonList(20);
+
+  const {
+    results: searchResults,
+    loading: searchLoading,
+    error: searchError,
+    searchPokemon,
+    clearResults,
+  } = usePokemonSearch();
+
+  // Check API health on component mount
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/health`);
+        if (response.ok) {
+          setApiStatus('healthy');
+        } else {
+          setApiStatus('unhealthy');
+        }
+      } catch (error) {
+        console.error('API health check failed:', error);
+        setApiStatus('unhealthy');
+      }
+    };
+
+    checkApiHealth();
+  }, []);
+
+  const handleSearch = async (query) => {
+    if (query.trim()) {
+      setSearchMode(true);
+      await searchPokemon(query);
+    } else {
+      setSearchMode(false);
+      clearResults();
     }
   };
 
-  useEffect(() => {
-    load({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-    load({ search: term, t: types });
+  const handleClearSearch = () => {
+    setSearchMode(false);
+    clearResults();
   };
 
-  const handleTypesChange = (nextTypes) => {
-    setTypes(nextTypes);
-    load({ search: searchTerm, t: nextTypes });
-  };
+  // Show API status if unhealthy
+  if (apiStatus === 'unhealthy') {
+    return (
+      <div className="app">
+        <div className="api-error">
+          <h1>🚨 API Connection Error</h1>
+          <p>Unable to connect to the Pokemon API backend.</p>
+          <p>
+            Please ensure the backend server is running on <code>{API_BASE}</code>
+          </p>
+          <button onClick={() => window.location.reload()}>Retry Connection</button>
+        </div>
+      </div>
+    );
+  }
 
-  // Clicking a type chip on a card refines filters to that type
-  const handleTypeChipClick = (type) => {
-    const nextTypes = [type];
-    setTypes(nextTypes);
-    load({ search: searchTerm, t: nextTypes });
-  };
-
-  // Optional: clicking the card or name – stub link already navigates via href
-  const handleOpenDetails = () => {
-    // Leave empty or plug in router navigation later
-  };
+  const isLoading = listLoading || searchLoading;
+  const currentError = searchMode ? searchError : listError;
+  const currentPokemon = searchMode ? searchResults : pokemon;
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Pokemon Type Selector</h1>
+    <div className="app">
+      <header className="app-header">
+        <h1> Pokedex </h1>
+        <p>Discover and explore Pokemon using PokeAPI</p>
+        {apiStatus === 'healthy' && <span className="api-status healthy">✅ API Connected</span>}
+      </header>
 
-        <SearchBar onSearch={handleSearch} />
+      <main className="app-main">
+        <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearchMode={searchMode} />
 
-        {searchTerm && <p>You searched for: {searchTerm}</p>}
-
-        <TypeButtonGroup onSelectionChange={handleTypesChange} />
-
-        {loading && (
-          <>
-            <p>Loading...</p>
-            <PokemonCardGrid aria-busy="true" aria-live="polite">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="pokemon-card skeleton" aria-hidden="true">
-                  <div className="image-wrap" />
-                  <div className="title" style={{ marginTop: 8, width: '70%' }} />
-                  <div className="types" style={{ marginTop: 8, width: '50%' }} />
-                </div>
-              ))}
-            </PokemonCardGrid>
-          </>
+        {currentError && (
+          <ErrorMessage
+            message={currentError}
+            onRetry={searchMode ? () => {} : reload}
+            showRetry={!searchMode}
+          />
         )}
 
-        {!loading && error && <p style={{ color: 'red' }}>{error}</p>}
+        {isLoading && <LoadingSpinner />}
 
-        {!loading && !error && (
+        {!isLoading && !currentError && (
           <>
-            {pokemon.length === 0 ? (
-              <p role="status" aria-live="polite">
-                No Pokémon found. Try a different search or type filter.
-              </p>
-            ) : (
-              <PokemonCardGrid aria-live="polite">
-                {pokemon.map((p) => (
-                  <PokemonCard
-                    key={p.id}
-                    pokemon={p}
-                    onTypeClick={handleTypeChipClick}
-                    onOpen={handleOpenDetails}
-                    linkHref={`/pokemon/${p.id}`}
-                  />
-                ))}
-              </PokemonCardGrid>
+            <PokemonList pokemon={currentPokemon} isSearchMode={searchMode} />
+
+            {!searchMode && (
+              <Pagination
+                pagination={pagination}
+                onNext={nextPage}
+                onPrevious={previousPage}
+                loading={listLoading}
+              />
             )}
           </>
         )}
 
-        <p>
-          Select up to two Pokemon types. Click on a type to select or deselect it. Selected types
-          will be highlighted. Try selecting different combinations!
-        </p>
-      </header>
+        {searchMode && !isLoading && !searchError && searchResults.length === 0 && (
+          <div className="no-results">
+            <p>No Pokemon found matching your search.</p>
+          </div>
+        )}
+      </main>
+
+      <footer className="app-footer">
+        <p>Powered by PokeAPI • Enhanced Backend with Caching</p>
+      </footer>
     </div>
   );
 }

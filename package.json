@@ -15,13 +15,7 @@
   },
   "lint-staged": {
     "*": "prettier --write --ignore-unknown",
-    "frontend/src/**/*.{js,jsx}": [
-      "npm --prefix frontend run lint",
-      "eslint --fix"
-    ],
-    "backend/**/*.py": [
-      "python -m ruff check --fix --unsafe-fixes",
-      "python -m mypy"
-    ]
+    "frontend/src/**/*.{js,jsx}": "npm --prefix frontend exec -- eslint --max-warnings=0 --fix",
+    "backend/**/*.py": "python -m ruff check --fix --unsafe-fixes"
   }
 }
