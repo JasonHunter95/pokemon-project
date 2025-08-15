@@ -45,6 +45,29 @@ class PokeAPIService:
             }
         except httpx.HTTPStatusError:
             return None
+    async def get_pokemon_detail(self, name_or_id: str) -> dict[str, Any]:
+        """Fetch a single Pokémon detail (cached)."""
+        cache_key = f"pokemon_detail:{name_or_id}"
+        try:
+            cached = await redis_pool.get(cache_key)
+            if cached:
+                logger.info(f"Detail cache hit: {cache_key}")
+                return json.loads(cached)
+        except Exception as e:
+            logger.error(f"Redis GET failed: {e}")
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            response = await client.get(f"{self.base_url}/pokemon/{name_or_id}")
+            response.raise_for_status()
+            data = response.json()
+
+        try:
+            await redis_pool.setex(cache_key, self.cache_ttl, json.dumps(data))
+            logger.info(f"Detail cached: {cache_key}")
+        except Exception as e:
+            logger.error(f"Redis SETEX failed: {e}")
+
+        return data
 
     async def get_pokemon_list(
         self,

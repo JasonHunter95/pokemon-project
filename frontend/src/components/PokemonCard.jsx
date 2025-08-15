@@ -1,11 +1,12 @@
+// frontend/src/components/PokemonCard.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './PokemonCard.css';
 
 function capitalize(s) {
   return (s || '').charAt(0).toUpperCase() + (s || '').slice(1);
 }
 
-// Simple inline SVG placeholder for missing sprites (accessible and lightweight)
 const placeholderSvg =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(`
@@ -17,25 +18,17 @@ const placeholderSvg =
 </svg>
 `);
 
-export default function PokemonCard({
-  pokemon,
-  onTypeClick, // (type: string) => void
-  linkHref, // optional: default `/pokemon/${id}`
-  onOpen, // optional: callback when clicking the card/name
-  className = '',
-  ...rest
-}) {
+export default function PokemonCard({ pokemon, onTypeClick, onOpen, className = '', ...rest }) {
   const { id, name, types = [], sprites } = pokemon || {};
   const imgSrc = sprites?.front_default || placeholderSvg;
-  const href = linkHref || `/pokemon/${id}`;
 
   return (
     <article className={`pokemon-card ${className}`} aria-label={`${name} card`} {...rest}>
-      <a
+      <Link
+        to={`/pokemon/${id}`}
         className="card-link"
-        href={href}
-        onClick={onOpen}
         aria-label={`View details for ${capitalize(name)} (#${id})`}
+        onClick={onOpen}
       >
         <div className="image-wrap">
           <img
@@ -54,7 +47,7 @@ export default function PokemonCard({
         <h2 className="title" id={`pokemon-${id}-title`}>
           <span className="id">#{id}</span> {capitalize(name)}
         </h2>
-      </a>
+      </Link>
 
       <div className="types" aria-label="Types">
         {types.map((t) => (
