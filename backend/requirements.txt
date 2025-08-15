@@ -1,6 +1,9 @@
 fastapi
 uvicorn[standard]
 httpx
+pydantic
+pydantic-settings
+python-multipart
 black
 ruff
 mypy

@@ -1,13 +1,19 @@
-# Pokémon Project using Python and React (Pokémon API) using Storybook for UI components
+# Pokémon Data Passion Project using Python and React (Pokémon API)
 
-This project is a Pokémon-themed application built with Python for the backend and React for the frontend. It utilizes the Pokémon API to fetch data about various Pokémon, which is then displayed in a user-friendly interface. The project also incorporates Storybook for developing and testing UI components in isolation.
+This project is a Pokémon-themed application built with Python for the backend and React for the frontend. It utilizes the Pokémon API (PokeAPI) to fetch data about various Pokémon, which is then displayed in a user-friendly interface. The project also incorporates Storybook for developing and testing UI components in isolation.
 
 ## Features
 
-- Fetch and display Pokémon data using the Pokémon API
+- Fetch and display Pokémon data using the Pokémon API (PokeAPI)
 - User-friendly interface built with React
 - Isolated component development and testing using Storybook
-- Search by name or ID and filter by up to two types
+- Search by name or ID using the search bar.
+- Search for abilities using the search bar.
+- Search for moves using the search bar.
+- Search for items using the search bar.
+- Filter by type using the type buttons (up to two types maximum)
+- Filter by stats using a set of sliders that contain min and max values indicative of the range of Pokémon stats.
+- Combo filters for type and stats
 - Card-based results grid (image, name, ID, and type chips)
 - Inline actions on cards: type chip refines filters; card/name links to details (stub link until routing)
 - Clear loading (skeletons), empty, and error states
@@ -19,6 +25,8 @@ This project is a Pokémon-themed application built with Python for the backend 
 
 These buttons represent the different Pokémon types (e.g., Fire, Water, Grass) and can be toggled on or off. Up to two buttons may be active at a time.
 This allows users to filter Pokémon by type. There are only type combinations of two types, so the buttons are designed to handle this limitation.
+In the event that a user tries to select a third type, the first selected type will be deselected automatically.
+If a user selects only one type, all Pokémon of that type will be displayed, including Pokémon with that type as a secondary type.
 
 ### Active Button State
 
@@ -106,16 +114,10 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
 
 ### Running Storybook
 
-- To run Storybook for isolated component development, navigate to the `frontend` directory and run:
+- To run Storybook for isolated component development, run:
 
   ```bash
   npm run storybook
-  ```
-
-- You can also run Storybook using the provided batch script from the 'root':
-
-  ```bash
-  ./run-storybook.bat
   ```
 
 ### Running Tests

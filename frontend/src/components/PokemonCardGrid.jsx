@@ -1,5 +1,5 @@
 import React from 'react';
-import './pokemon-grid.css';
+import './PokemonCardGrid.css';
 
 export default function PokemonCardGrid({ children, className = '', ...rest }) {
   return (

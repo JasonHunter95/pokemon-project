@@ -10,14 +10,12 @@
     "lint": "npm run lint:js && npm run lint:py",
     "lint:js": "npm --prefix frontend run lint",
     "lint:py": "ruff check ./backend --fix --unsafe-fixes",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "npm --prefix frontend run storybook"
   },
   "lint-staged": {
-    "*.{js,jsx,css,md,json}": "prettier --write",
-    "frontend/src/**/*.{js,jsx}": "npm --prefix frontend run lint",
-    "backend/**/*.py": [
-      "python -m ruff check --fix --unsafe-fixes",
-      "python -m mypy"
-    ]
+    "*": "prettier --write --ignore-unknown",
+    "frontend/src/**/*.{js,jsx}": "npm --prefix frontend exec -- eslint --max-warnings=0 --fix",
+    "backend/**/*.py": "python -m ruff check --fix --unsafe-fixes"
   }
 }

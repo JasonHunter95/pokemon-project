@@ -1,6 +1,6 @@
 import { rest } from 'msw';
-import { server } from './test/msw/server';
-import { fetchPokemon, API_BASE } from './api';
+import { server } from './test/msw/server.js';
+import { fetchPokemon, API_BASE } from './API.js';
 
 test('fetchPokemon passes search, types, limit, and offset', async () => {
   let captured;
