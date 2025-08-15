@@ -1,22 +1,27 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { renderWithRouter } from './test/renderWithRouter';
+import { rest } from 'msw';
+import { server } from './test/msw/server';
+import { API_BASE } from './API';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import App from './App';
 
-test('loads and renders Pokémon cards on initial load', async () => {
-  render(<App />);
-  await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
+beforeEach(() => {
+  server.use(rest.get(`${API_BASE}/health`, (_req, res, ctx) => res(ctx.status(200))));
+});
 
+test('loads and renders Pokémon cards on initial load', async () => {
+  renderWithRouter(<App />);
+  await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
   const cards = screen.getAllByLabelText(/card$/i);
   expect(cards.length).toBeGreaterThanOrEqual(2);
-
-  // Names come from MSW handlers
   expect(screen.getByLabelText(/bulbasaur card/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/charmander card/i)).toBeInTheDocument();
 });
 
 test('renders Pokemon cards from API search', async () => {
-  render(<App />);
+  renderWithRouter(<App />);
   // Wait for initial load to complete and cards to appear
   await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
   const cards = screen.getAllByLabelText(/card$/i);
@@ -34,7 +39,7 @@ test('renders Pokemon cards from API search', async () => {
 });
 
 test('filters by type when clicking a type chip on a card', async () => {
-  render(<App />);
+  renderWithRouter(<App />);
   await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
 
   // Click a type chip (assumes first card has at least one type)

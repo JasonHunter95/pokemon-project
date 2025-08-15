@@ -1,4 +1,5 @@
 import { rest } from 'msw';
+import { API_BASE } from '../../API';
 
 const makePokemon = (overrides = {}) => ({
   id: 25,
@@ -12,6 +13,7 @@ const makePokemon = (overrides = {}) => ({
 });
 
 export const handlers = [
+  rest.get(`${API_BASE}/health`, (_req, res, ctx) => res(ctx.status(200))),
   rest.get('*/health', (req, res, ctx) => {
     return res(ctx.json({ status: 'healthy' }));
   }),

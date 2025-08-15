@@ -18,14 +18,22 @@ const placeholderSvg =
 </svg>
 `);
 
-export default function PokemonCard({ pokemon, onTypeClick, onOpen, className = '', ...rest }) {
+export default function PokemonCard({
+  pokemon,
+  onTypeClick,
+  onOpen,
+  className = '',
+  linkHref,
+  ...rest
+}) {
   const { id, name, types = [], sprites } = pokemon || {};
   const imgSrc = sprites?.front_default || placeholderSvg;
+  const detailsHref = linkHref || `/pokemon/${id}`;
 
   return (
     <article className={`pokemon-card ${className}`} aria-label={`${name} card`} {...rest}>
       <Link
-        to={`/pokemon/${id}`}
+        to={detailsHref}
         className="card-link"
         aria-label={`View details for ${capitalize(name)} (#${id})`}
         onClick={onOpen}
