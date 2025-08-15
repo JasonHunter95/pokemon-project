@@ -6,10 +6,19 @@ export async function fetchTypes() {
   return res.json();
 }
 
-export async function fetchPokemon({ search = '', types = [], limit = 20, offset = 0 } = {}) {
+export async function fetchPokemon({
+  search = '',
+  types = [],
+  limit = 20,
+  offset = 0,
+  match = 'all',
+} = {}) {
   const params = new URLSearchParams();
   if (search) params.set('search', search);
-  if (types?.length) params.set('types', types.join(','));
+  if (types?.length) {
+    params.set('types', types.slice(0, 2).join(','));
+    params.set('match', match); // 'all' (AND) or 'any' (OR)
+  }
   params.set('limit', String(limit));
   params.set('offset', String(offset));
   const res = await fetch(`${API_BASE}/pokemon?${params.toString()}`);
