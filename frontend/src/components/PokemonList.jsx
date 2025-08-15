@@ -16,7 +16,7 @@ const PokemonList = ({ pokemon = [], isSearchMode = false, onPokemonClick, onTyp
   // Transform the data to match what PokemonCard expects
   const transformedPokemon = pokemon.map((poke) => {
     // Handle both detailed and basic Pokemon data structures
-    if (poke.id && poke.name) {
+    if (poke.id && poke.name && poke.sprites?.front_default) {
       return poke; // Already in correct format
     }
 
@@ -27,12 +27,14 @@ const PokemonList = ({ pokemon = [], isSearchMode = false, onPokemonClick, onTyp
       return matches ? parseInt(matches[1]) : 1;
     };
 
+    const pokemonId = poke.id || getPokemonId(poke.url);
+
     return {
-      id: poke.id || getPokemonId(poke.url),
+      id: pokemonId,
       name: poke.name,
       types: poke.types || [],
       sprites: poke.sprites || {
-        front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getPokemonId(poke.url)}.png`,
+        front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
       },
     };
   });

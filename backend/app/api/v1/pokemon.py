@@ -50,7 +50,9 @@ async def get_pokemon(
                     "id": details["id"],
                     "name": details["name"],
                     "types": [t["type"]["name"] for t in details["types"]],
-                    "sprite": details["sprites"]["front_default"]
+                    "sprites": {
+                        "front_default": details["sprites"]["front_default"]
+                    }
                 })
 
         return {
