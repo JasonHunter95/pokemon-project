@@ -36,8 +36,19 @@ async def fetch_pokemon_details(client: httpx.AsyncClient, url: str) -> Optional
             "sprites": {"front_default": details["sprites"]["front_default"]},
         }
     except httpx.HTTPStatusError:
-        # If a single Pokémon fails, we can choose to return None and filter it out
         return None
+
+
+async def get_pokemon_for_type(
+    client: httpx.AsyncClient, type_name: str
+) -> list[dict[str, str]]:
+    """Fetches a list of pokemon references for a given type."""
+    response = await client.get(f"{POKEAPI_BASE_URL}/type/{type_name}")
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid Pokémon type requested: {type_name}"
+        )
+    return [p["pokemon"] for p in response.json()["pokemon"]]
 
 
 @router.get("")  # This will be accessible at /pokemon due to the prefix
@@ -46,51 +57,48 @@ async def get_pokemon(
     types: Optional[str] = Query(None),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    match: str = "all",  # "all" = AND, "any" = OR
 ):
-    """Get Pokemon with optional filtering and optimized data fetching."""
+    """Get Pokemon with robust server-side filtering and optimized data fetching."""
     async with httpx.AsyncClient() as client:
         pokemon_references = []
 
+        parsed_types = []
         if types:
-            # Support up to two types
-            type_names = [t.strip().lower() for t in types.split(",") if t.strip()][:2]
-            type_lists = []
-            for type_name in type_names:
-                type_response = await client.get(f"{POKEAPI_BASE_URL}/type/{type_name}")
-                if type_response.status_code != 200:
-                    raise HTTPException(
-                        status_code=type_response.status_code,
-                        detail=f"Failed to fetch Pokémon for type: {type_name}",
-                    )
-                type_data = type_response.json()
-                type_lists.append([p["pokemon"] for p in type_data["pokemon"]])
+            parsed_types = [t.strip().lower() for t in types.split(",") if t.strip()]
 
-            if len(type_lists) == 1:
-                pokemon_references = type_lists[0]
+        if parsed_types:
+            # Concurrently fetch Pokémon lists for all specified types
+            type_fetch_tasks = [get_pokemon_for_type(client, t) for t in parsed_types]
+            list_of_pokemon_lists = await asyncio.gather(*type_fetch_tasks)
+
+            # Create sets of names for efficient intersection
+            name_sets = [
+                {p["name"] for p in poke_list} for poke_list in list_of_pokemon_lists
+            ]
+
+            # Find the intersection of all sets
+            if not name_sets:
+                intersected_names = set()
             else:
-                dicts_by_url = [{p["url"]: p for p in lst} for lst in type_lists]
-                if (match or "all").lower() == "any":  # OR
-                    merged = {}
-                    for d in dicts_by_url:
-                        merged.update(d)
-                    pokemon_references = list(merged.values())
-                else:  # AND (default)
-                    common_urls = set(dicts_by_url[0]).intersection(*[set(d) for d in dicts_by_url[1:]])
-                    pokemon_references = [dicts_by_url[0][u] for u in common_urls]
+                intersected_names = set.intersection(*name_sets)
 
-            pokemon_references.sort(key=lambda x: x["name"])
+            # Create a map of name -> url from the first list to reconstruct references
+            # This is safe because any pokemon in the intersection must be in the first list
+            name_to_url_map = {p["name"]: p["url"] for p in list_of_pokemon_lists[0]}
+
+            # Reconstruct the pokemon_references list
+            pokemon_references = [
+                {"name": name, "url": name_to_url_map[name]}
+                for name in sorted(list(intersected_names)) # Sort for consistent order
+            ]
         else:
-            # Fetch all pokemon references if no type is specified
-            all_pokemon_response = await client.get(
-                f"{POKEAPI_BASE_URL}/pokemon?limit=2000"
-            )
-            if all_pokemon_response.status_code != 200:
+            # Fallback: Fetch all pokemon references if no type is specified
+            response = await client.get(f"{POKEAPI_BASE_URL}/pokemon?limit=2000")
+            if response.status_code != 200:
                 raise HTTPException(
-                    status_code=all_pokemon_response.status_code,
-                    detail="Failed to fetch Pokemon list",
+                    status_code=response.status_code, detail="Failed to fetch Pokemon list"
                 )
-            pokemon_references = all_pokemon_response.json()["results"]
+            pokemon_references = response.json()["results"]
 
         # Filter by search term if provided
         if search:
@@ -101,17 +109,15 @@ async def get_pokemon(
         # Total count after filtering
         count = len(pokemon_references)
 
-        # Apply pagination to the list of references
+        # Apply pagination
         paginated_references = pokemon_references[offset : offset + limit]
 
         # Concurrently fetch details for the paginated list
         tasks: list[Coroutine[Any, Any, Optional[dict[str, Any]]]] = [
             fetch_pokemon_details(client, p["url"]) for p in paginated_references
         ]
-        pokemon_details_results = await asyncio.gather(*tasks)
-
-        # Filter out any None results from failed fetches
-        pokemon_details = [p for p in pokemon_details_results if p is not None]
+        results = await asyncio.gather(*tasks)
+        pokemon_details = [p for p in results if p is not None]
 
         return {
             "results": pokemon_details,
