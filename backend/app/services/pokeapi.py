@@ -1,199 +1,127 @@
+import asyncio
+import json
 import logging
-import time
 from typing import Any, Optional
 
 import httpx
+import redis.asyncio as redis
 from app.core.config import settings
-from app.schemas.pokemon import PokemonBasic, PokemonDetail, PokemonListResponse
 
 logger = logging.getLogger(__name__)
 
-class PokemonCache:
-    """Enhanced in-memory cache with TTL and size limits"""
+# Create a Redis connection pool
+redis_pool = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
 
-    def __init__(self, max_size: int = None, ttl: int = None):
-        self.max_size = max_size or settings.max_cache_size
-        self.ttl = ttl or settings.cache_ttl
-        self._cache: dict[str, Any] = {}
-        self._timestamps: dict[str, float] = {}
-        self._access_order: list[str] = []  # For LRU eviction
-
-    def _is_expired(self, key: str) -> bool:
-        """Check if cache entry is expired"""
-        if key not in self._timestamps:
-            return True
-        return time.time() - self._timestamps[key] > self.ttl
-
-    def _evict_lru(self):
-        """Evict least recently used item"""
-        if self._access_order:
-            lru_key = self._access_order.pop(0)
-            self._cache.pop(lru_key, None)
-            self._timestamps.pop(lru_key, None)
-
-    def _update_access(self, key: str):
-        """Update access order for LRU"""
-        if key in self._access_order:
-            self._access_order.remove(key)
-        self._access_order.append(key)
-
-    def get(self, key: str) -> Optional[Any]:
-        """Get item from cache"""
-        if key not in self._cache or self._is_expired(key):
-            # Clean up expired entry
-            self._cache.pop(key, None)
-            self._timestamps.pop(key, None)
-            if key in self._access_order:
-                self._access_order.remove(key)
-            return None
-
-        self._update_access(key)
-        return self._cache[key]
-
-    def set(self, key: str, value: Any) -> None:
-        """Set item in cache"""
-        # Evict if at max size
-        if len(self._cache) >= self.max_size and key not in self._cache:
-            self._evict_lru()
-
-        self._cache[key] = value
-        self._timestamps[key] = time.time()
-        self._update_access(key)
-
-    def clear(self) -> None:
-        """Clear all cache entries"""
-        self._cache.clear()
-        self._timestamps.clear()
-        self._access_order.clear()
-
-    def size(self) -> int:
-        """Get current cache size"""
-        return len(self._cache)
-
-# Global cache instance
-pokemon_cache = PokemonCache()
 
 class PokeAPIService:
-    """Enhanced service for interacting with the PokeAPI"""
+    """Service for interacting with the PokeAPI, with Redis caching."""
 
     def __init__(self):
         self.base_url = settings.pokeapi_base_url
         self.timeout = settings.http_timeout
-        self._client: Optional[httpx.AsyncClient] = None
+        self.cache_ttl = settings.cache_ttl  # Use TTL from settings
 
-    async def __aenter__(self):
-        """Async context manager entry"""
-        self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(self.timeout),
-            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
-        )
-        return self
+    async def _get_pokemon_for_type(
+        self, client: httpx.AsyncClient, type_name: str
+    ) -> list[dict[str, str]]:
+        """Fetches a list of pokemon references for a given type from API."""
+        response = await client.get(f"{self.base_url}/type/{type_name}")
+        response.raise_for_status()
+        return [p["pokemon"] for p in response.json()["pokemon"]]
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit"""
-        if self._client:
-            await self._client.aclose()
-
-    async def _make_request(self, endpoint: str) -> dict[str, Any]:
-        """Make a request to the PokeAPI with comprehensive error handling"""
-        if not self._client:
-            raise RuntimeError("Service not initialized. Use as async context manager.")
-
-        url = f"{self.base_url}/{endpoint.lstrip('/')}"
-
+    async def _fetch_pokemon_details(
+        self, client: httpx.AsyncClient, url: str
+    ) -> Optional[dict[str, Any]]:
+        """Fetches and shapes full details for a single Pokémon from API."""
         try:
-            logger.info(f"Making request to: {url}")
-            response = await self._client.get(url)
+            response = await client.get(url)
             response.raise_for_status()
-            return response.json()
+            details = response.json()
+            return {
+                "id": details["id"],
+                "name": details["name"],
+                "types": [t["type"]["name"] for t in details["types"]],
+                "sprites": {"front_default": details["sprites"]["front_default"]},
+            }
+        except httpx.HTTPStatusError:
+            return None
 
-        except httpx.TimeoutException:
-            logger.error(f"Timeout error for URL: {url}")
-            raise httpx.RequestError(f"Request timeout for {url}")
-        except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP {e.response.status_code} error for URL: {url}")
-            raise
-        except httpx.RequestError as e:
-            logger.error(f"Request error for URL {url}: {e}")
-            raise
+    async def get_pokemon_list(
+        self,
+        search: Optional[str] = None,
+        types: Optional[list[str]] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """
+        Gets a list of Pokémon, using Redis for caching and optimized filtering.
+        """
+        # Create a unique cache key based on all query parameters
+        cache_key = f"pokemon_list:search={search or ''}:types={','.join(types or [])}:limit={limit}:offset={offset}"
+
+        # 1. Check cache first
+        try:
+            cached_data = await redis_pool.get(cache_key)
+            if cached_data:
+                logger.info(f"Cache hit for key: {cache_key}")
+                return json.loads(cached_data)
         except Exception as e:
-            logger.error(f"Unexpected error for URL {url}: {e}")
-            raise
+            logger.error(f"Redis GET failed: {e}")
 
-    async def get_pokemon_list(self, limit: int = 20, offset: int = 0) -> PokemonListResponse:
-        """Get a paginated list of Pokemon"""
-        cache_key = f"pokemon_list_{limit}_{offset}"
+        logger.info(f"Cache miss for key: {cache_key}")
 
-        # Check cache first
-        cached_data = pokemon_cache.get(cache_key)
-        if cached_data:
-            logger.info(f"Cache hit for {cache_key}")
-            return PokemonListResponse(**cached_data)
+        # 2. If cache miss, fetch from API
+        async with httpx.AsyncClient() as client:
+            pokemon_references: list[dict[str, str]] = []
 
-        # Fetch from API
-        endpoint = f"pokemon?limit={limit}&offset={offset}"
-        data = await self._make_request(endpoint)
+            if types:
+                tasks = [self._get_pokemon_for_type(client, t) for t in types]
+                list_of_pokemon_lists = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Cache the result
-        pokemon_cache.set(cache_key, data)
-        logger.info(f"Cached result for {cache_key}")
+                # Filter out any failed requests before processing
+                successful_lists = [lst for lst in list_of_pokemon_lists if isinstance(lst, list)]
+                if len(successful_lists) != len(types):
+                    # Handle error if a type was invalid
+                    raise httpx.RequestError("One or more invalid Pokémon types requested.")
 
-        return PokemonListResponse(**data)
+                name_sets = [{p["name"] for p in poke_list} for poke_list in successful_lists]
+                intersected_names = set.intersection(*name_sets) if name_sets else set()
 
-    async def get_pokemon_detail(self, pokemon_name_or_id: str) -> PokemonDetail:
-        """Get detailed information about a specific Pokemon"""
-        cache_key = f"pokemon_detail_{pokemon_name_or_id.lower()}"
+                name_to_url_map = {p["name"]: p["url"] for p in successful_lists[0]}
+                pokemon_references = [
+                    {"name": name, "url": name_to_url_map[name]}
+                    for name in sorted(list(intersected_names))
+                ]
+            else:
+                response = await client.get(f"{self.base_url}/pokemon?limit=2000")
+                response.raise_for_status()
+                pokemon_references = response.json()["results"]
 
-        # Check cache first
-        cached_data = pokemon_cache.get(cache_key)
-        if cached_data:
-            logger.info(f"Cache hit for {cache_key}")
-            return PokemonDetail(**cached_data)
+            if search:
+                pokemon_references = [
+                    p for p in pokemon_references if search.lower() in p["name"].lower()
+                ]
 
-        # Fetch from API
-        endpoint = f"pokemon/{pokemon_name_or_id.lower()}"
-        data = await self._make_request(endpoint)
+            count = len(pokemon_references)
+            paginated_refs = pokemon_references[offset : offset + limit]
 
-        # Cache the result
-        pokemon_cache.set(cache_key, data)
-        logger.info(f"Cached result for {cache_key}")
+            detail_tasks = [self._fetch_pokemon_details(client, p["url"]) for p in paginated_refs]
+            details_results = await asyncio.gather(*detail_tasks)
+            final_pokemon_details = [p for p in details_results if p is not None]
 
-        return PokemonDetail(**data)
+            # 3. Construct the final response object
+            response_data = {
+                "results": final_pokemon_details,
+                "count": count,
+                "next": (offset + limit) < count,
+                "previous": offset > 0,
+            }
 
-    async def search_pokemon(self, query: str, limit: int = 10) -> list[PokemonBasic]:
-        """Search for Pokemon by name"""
-        cache_key = f"pokemon_search_{query.lower()}_{limit}"
+            # 4. Store the result in Redis with a TTL (Time-To-Live)
+            try:
+                await redis_pool.setex(cache_key, self.cache_ttl, json.dumps(response_data))
+                logger.info(f"Cached result for key: {cache_key}")
+            except Exception as e:
+                logger.error(f"Redis SETEX failed: {e}")
 
-        # Check cache first
-        cached_data = pokemon_cache.get(cache_key)
-        if cached_data:
-            logger.info(f"Cache hit for {cache_key}")
-            return [PokemonBasic(**item) for item in cached_data]
-
-        # Get a larger list and filter (in production, you'd want a better search mechanism)
-        pokemon_list = await self.get_pokemon_list(limit=1200)  # Get more Pokemon for better search
-
-        filtered_results = [
-            pokemon for pokemon in pokemon_list.results
-            if query.lower() in pokemon.name.lower()
-        ][:limit]
-
-        # Cache the results
-        cached_results = [pokemon.dict() for pokemon in filtered_results]
-        pokemon_cache.set(cache_key, cached_results)
-        logger.info(f"Cached search results for {cache_key}")
-
-        return filtered_results
-
-    async def get_cache_stats(self) -> dict[str, Any]:
-        """Get cache statistics"""
-        return {
-            "cache_size": pokemon_cache.size(),
-            "max_cache_size": pokemon_cache.max_size,
-            "cache_ttl": pokemon_cache.ttl
-        }
-
-# Dependency function
-async def get_pokeapi_service() -> PokeAPIService:
-    """Dependency to get PokeAPI service"""
-    return PokeAPIService()
+            return response_data

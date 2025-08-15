@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     # External APIs
     pokeapi_base_url: str = "https://pokeapi.co/api/v2"
 
+    # Redis Configuration (default if not using docker, but I override it in docker-compose)
+    redis_url: str = "redis://localhost:6379"
+
     # Cache Configuration
     cache_ttl: int = 3600  # 1 hour in seconds
     max_cache_size: int = 1000  # Maximum number of cached items
