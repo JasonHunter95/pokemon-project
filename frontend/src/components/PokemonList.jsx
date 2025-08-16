@@ -6,7 +6,7 @@ import styles from './PokemonList.module.css';
 const PokemonList = ({ pokemon = [], isSearchMode = false, onPokemonClick, onTypeClick }) => {
   if (!pokemon || pokemon.length === 0) {
     return (
-      <div className={styles['pokemon-list-empty']}>
+      <div className={styles['pokemon-list-empty']} role="status" aria-live="polite">
         <h3>No Pokemon found</h3>
         <p>{isSearchMode ? 'Try a different search term' : 'Unable to load Pokemon data'}</p>
       </div>
@@ -40,7 +40,7 @@ const PokemonList = ({ pokemon = [], isSearchMode = false, onPokemonClick, onTyp
   });
 
   return (
-    <PokemonCardGrid className={isSearchMode ? 'search-mode' : ''}>
+    <PokemonCardGrid className={isSearchMode ? 'search-mode' : ''} aria-label="Pokemon results">
       {transformedPokemon.map((poke) => (
         <PokemonCard
           key={poke.id || poke.name}
