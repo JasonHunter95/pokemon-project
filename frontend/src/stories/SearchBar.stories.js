@@ -6,55 +6,54 @@ export default {
   component: SearchBar,
   argTypes: {
     onSearch: { action: 'search' },
-    size: {
-      control: { type: 'select' },
-      options: ['small', 'default', 'large'],
-      defaultValue: 'default',
-    },
+    onClear: { action: 'clear' },
+    isSearchMode: { control: 'boolean' },
   },
   parameters: {
     docs: {
       description: {
         component:
-          'A responsive search bar component for searching Pokémon. Includes search icon, clear button, and customizable sizing.',
+          'A responsive search bar for searching Pokémon. Includes a clear button that appears when isSearchMode=true.',
       },
     },
   },
 };
 
 // Default search bar
-export const Default = () => <SearchBar />;
+export const Default = {
+  args: {},
+};
 
 // With custom placeholder
-export const CustomPlaceholder = () => <SearchBar placeholder="Find your favorite Pokémon..." />;
+export const CustomPlaceholder = {
+  args: {
+    placeholder: 'Find your favorite Pokémon...',
+  },
+};
 
-// Size variations
-export const Sizes = () => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <SearchBar size="small" placeholder="Small search..." />
-    <SearchBar placeholder="Default size" />
-    <SearchBar size="large" placeholder="Large search..." />
-  </div>
-);
-
-// With initial value
-export const WithInitialValue = () => (
-  <SearchBar initialValue="Pikachu" onSearch={(term) => console.log(`Searching for: ${term}`)} />
-);
+// Search bar with clear button
+export const WithClearButton = {
+  args: {
+    isSearchMode: true,
+  },
+};
 
 // In context
-export const InContext = () => (
-  <div
-    style={{
-      padding: '20px',
-      background: '#2a2a2a',
-      borderRadius: '10px',
-      color: 'white',
-      maxWidth: '600px',
-    }}
-  >
-    <h3>Pokémon Finder</h3>
-    <p style={{ fontSize: '14px' }}>Search for Pokémon by name or ID</p>
-    <SearchBar />
-  </div>
-);
+export const InContext = {
+  render: (args) => (
+    <div
+      style={{
+        padding: '20px',
+        background: '#2a2a2a',
+        borderRadius: '10px',
+        color: 'white',
+        maxWidth: '600px',
+      }}
+    >
+      <h3>Pokémon Finder</h3>
+      <p style={{ fontSize: '14px' }}>Search for Pokémon by name or ID</p>
+      <SearchBar {...args} />
+    </div>
+  ),
+  args: {},
+};

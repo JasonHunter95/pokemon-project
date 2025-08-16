@@ -4,15 +4,10 @@ const config = {
   addons: [
     '@storybook/preset-create-react-app',
     '@storybook/addon-docs',
-    '@storybook/addon-onboarding',
+    '@storybook/addon-essentials',
+    '@storybook/addon-msw',
   ],
-  framework: {
-    name: '@storybook/react-webpack5',
-    options: {},
-  },
-  staticDirs: [
-    // '../public', // For MAC
-    '..\\public', // For Windows
-  ],
+  framework: { name: '@storybook/react-webpack5', options: {} },
+  staticDirs: ['..\\public'],
 };
 export default config;

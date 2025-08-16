@@ -1,10 +1,18 @@
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import PokemonCard from '../components/PokemonCard';
 import PokemonCardGrid from '../components/PokemonCardGrid';
 
 export default {
   title: 'Components/PokemonCard',
   component: PokemonCard,
+  decorators: [
+    (Story) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
 };
 
 const basePokemon = {
@@ -18,9 +26,7 @@ const basePokemon = {
 };
 
 export const Default = {
-  args: {
-    pokemon: basePokemon,
-  },
+  args: { pokemon: basePokemon },
 };
 
 export const MultipleTypes = {
