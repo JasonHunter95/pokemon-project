@@ -1,9 +1,15 @@
 // frontend/src/components/SearchBar.jsx
 import React, { useState } from 'react';
-import styles from './SearchBar.module.css'; // Import as a module
+import styles from './SearchBar.module.css';
 
-const SearchBar = ({ onSearch, onClear, isSearchMode }) => {
-  const [query, setQuery] = useState('');
+const SearchBar = ({
+  onSearch = () => {},
+  onClear = () => {},
+  isSearchMode,
+  placeholder = 'Search Pokémon by name...',
+  initialQuery = '',
+}) => {
+  const [query, setQuery] = useState(initialQuery);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,7 +29,7 @@ const SearchBar = ({ onSearch, onClear, isSearchMode }) => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search Pokemon by name..."
+            placeholder={placeholder}
             className={styles['search-input']}
             aria-label="Search"
           />
