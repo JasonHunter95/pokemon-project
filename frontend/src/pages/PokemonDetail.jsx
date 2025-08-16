@@ -4,22 +4,29 @@ import { Link, useParams } from 'react-router-dom';
 import { usePokemonDetail } from '../hooks/usePokemon';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
-import './PokemonDetail.css'; // We will create this CSS file next
+import './PokemonDetail.css';
 
 const PokemonDetail = () => {
-  const { pokemonId } = useParams(); // Get the ID from the URL
-  const { pokemon, loading, error, reload } = usePokemonDetail(pokemonId);
+  const { pokemonId } = useParams();
+  const { data: pokemon, isLoading, isError, error } = usePokemonDetail(pokemonId);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (error) {
-    return <ErrorMessage message={error} onRetry={reload} />;
+  if (isError) {
+    return <ErrorMessage message={error.message} showRetry={false} />;
   }
 
   if (!pokemon) {
-    return null; // Or a "Not Found" message
+    return (
+      <div className="pokemon-detail-container">
+        <h2>Pokemon not found.</h2>
+        <Link to="/" className="back-link">
+          &larr; Back to Pokedex
+        </Link>
+      </div>
+    );
   }
 
   const capitalizedName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);

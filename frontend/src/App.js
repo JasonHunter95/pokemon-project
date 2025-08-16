@@ -1,4 +1,5 @@
 // frontend/src/App.js
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { API_BASE } from './API';
@@ -53,8 +54,9 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Powered by PokeAPI • Enhanced Backend with Caching</p>
+        <p>Powered by PokeAPI</p>
       </footer>
+      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   );
 }

@@ -1,4 +1,8 @@
 // Polyfill before loading MSW (use require to control evaluation order)
+// Testing Library matchers
+import '@testing-library/jest-dom';
+import { server } from './test/msw/server';
+
 const { TextEncoder, TextDecoder } = require('util');
 if (!global.TextEncoder) global.TextEncoder = TextEncoder;
 if (!global.TextDecoder) global.TextDecoder = TextDecoder;
@@ -20,12 +24,6 @@ if (!global.TransformStream) global.TransformStream = TransformStream;
 
 // Polyfill fetch in jsdom
 require('whatwg-fetch');
-
-// Testing Library matchers
-require('@testing-library/jest-dom');
-
-// Start MSW
-const { server } = require('./test/msw/server');
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
