@@ -25,3 +25,14 @@ export async function fetchPokemon({
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }
+
+export async function fetchPokemonDetail(pokemonId) {
+  const res = await fetch(`${API_BASE}/pokemon/${pokemonId}`);
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error(`Pokemon with ID ${pokemonId} not found.`);
+    }
+    throw new Error(`API error: ${res.status}`);
+  }
+  return res.json();
+}

@@ -1,82 +1,69 @@
 // frontend/src/pages/PokemonList.jsx
 import React, { useState } from 'react';
-import { usePokemonList, usePokemonSearch } from '../hooks/usePokemon';
-import PokemonListComponent from '../components/PokemonList'; // Renaming to avoid confusion
+import { usePokemonList } from '../hooks/usePokemon';
+import PokemonListComponent from '../components/PokemonList';
 import SearchBar from '../components/SearchBar';
 import Pagination from '../components/Pagination';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 const PokemonList = () => {
-  const [searchMode, setSearchMode] = useState(false);
+  const [filters, setFilters] = useState({
+    search: '',
+    types: [],
+    limit: 20,
+    offset: 0,
+  });
 
-  const {
-    pokemon,
-    loading: listLoading,
-    error: listError,
-    pagination,
-    nextPage,
-    previousPage,
-    reload,
-  } = usePokemonList(20);
+  const { data, isLoading, isError, error } = usePokemonList(filters);
 
-  const {
-    results: searchResults,
-    loading: searchLoading,
-    error: searchError,
-    searchPokemon,
-    clearResults,
-  } = usePokemonSearch();
-
-  const handleSearch = async (query) => {
-    if (query.trim()) {
-      setSearchMode(true);
-      await searchPokemon(query);
-    } else {
-      setSearchMode(false);
-      clearResults();
-    }
+  const handleSearch = (query) => {
+    setFilters((prev) => ({ ...prev, search: query, offset: 0 }));
   };
 
   const handleClearSearch = () => {
-    setSearchMode(false);
-    clearResults();
+    setFilters((prev) => ({ ...prev, search: '', offset: 0 }));
   };
 
-  const isLoading = listLoading || searchLoading;
-  const currentError = searchMode ? searchError : listError;
-  const currentPokemon = searchMode ? searchResults : pokemon;
+  const handleNextPage = () => {
+    setFilters((prev) => ({ ...prev, offset: prev.offset + prev.limit }));
+  };
+
+  const handlePreviousPage = () => {
+    setFilters((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }));
+  };
+
+  const isSearchMode = !!filters.search;
 
   return (
     <>
-      <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearchMode={searchMode} />
+      <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearchMode={isSearchMode} />
 
-      {currentError && (
-        <ErrorMessage
-          message={currentError}
-          onRetry={searchMode ? () => {} : reload}
-          showRetry={!searchMode}
-        />
-      )}
+      {isError && <ErrorMessage message={error.message} onRetry={() => {}} showRetry={false} />}
 
       {isLoading && <LoadingSpinner />}
 
-      {!isLoading && !currentError && (
+      {data && (
         <>
-          <PokemonListComponent pokemon={currentPokemon} isSearchMode={searchMode} />
+          <PokemonListComponent pokemon={data.results} isSearchMode={isSearchMode} />
 
-          {!searchMode && (
+          {!isSearchMode && data.count > filters.limit && (
             <Pagination
-              pagination={pagination}
-              onNext={nextPage}
-              onPrevious={previousPage}
-              loading={listLoading}
+              pagination={{
+                ...filters,
+                count: data.count,
+                next: data.next,
+                previous: data.previous,
+              }}
+              onNext={handleNextPage}
+              onPrevious={handlePreviousPage}
+              loading={isLoading}
             />
           )}
         </>
       )}
 
-      {searchMode && !isLoading && !searchError && searchResults.length === 0 && (
+      {isSearchMode && !isLoading && data?.results.length === 0 && (
         <div className="no-results">
           <p>No Pokemon found matching your search.</p>
         </div>
