@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { usePokemonDetail } from '../hooks/usePokemon';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
-import './PokemonDetail.css';
+import styles from './PokemonDetail.module.css';
 
 const PokemonDetail = () => {
   const { pokemonId } = useParams();
@@ -20,9 +20,9 @@ const PokemonDetail = () => {
 
   if (!pokemon) {
     return (
-      <div className="pokemon-detail-container">
+      <div className={styles.pokemonDetailContainer}>
         <h2>Pokemon not found.</h2>
-        <Link to="/" className="back-link">
+        <Link to="/" className={styles.backLink}>
           &larr; Back to Pokedex
         </Link>
       </div>
@@ -32,30 +32,30 @@ const PokemonDetail = () => {
   const capitalizedName = pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
 
   return (
-    <div className="pokemon-detail-container">
-      <Link to="/" className="back-link">
+    <div className={styles['pokemon-detail-container']}>
+      <Link to="/" className={styles['back-link']}>
         &larr; Back to Pokedex
       </Link>
-      <article className="pokemon-detail-card">
-        <div className="detail-header">
+      <article className={styles['pokemon-detail-card']}>
+        <div className={styles['detail-header']}>
           <h1>{capitalizedName}</h1>
-          <span className="detail-id">#{String(pokemon.id).padStart(3, '0')}</span>
+          <span className={styles['detail-id']}>#{String(pokemon.id).padStart(3, '0')}</span>
         </div>
-        <div className="detail-content">
-          <div className="detail-image-wrapper">
+        <div className={styles['detail-content']}>
+          <div className={styles['detail-image-wrapper']}>
             <img
               src={pokemon.sprites?.front_default}
               alt={`${capitalizedName} sprite`}
-              className="detail-sprite"
+              className={styles['detail-sprite']}
             />
           </div>
-          <div className="detail-info">
+          <div className={styles['detail-info']}>
             <h2>Stats</h2>
-            <ul className="stats-list">
+            <ul className={styles['stats-list']}>
               {pokemon.stats.map((statInfo) => (
                 <li key={statInfo.stat.name}>
-                  <span className="stat-name">{statInfo.stat.name.replace('-', ' ')}</span>
-                  <span className="stat-value">{statInfo.base_stat}</span>
+                  <span>{statInfo.stat.name.replace('-', ' ')}</span>
+                  <span className={styles['stat-value']}>{statInfo.base_stat}</span>
                 </li>
               ))}
             </ul>

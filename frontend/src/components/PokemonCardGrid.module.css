@@ -10,3 +10,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.pokemon-grid:global(.search-mode) {
+  border: 2px solid #667eea;
+  padding: 1rem;
+  border-radius: 12px;
+}

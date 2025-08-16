@@ -1,9 +1,10 @@
+// frontend/src/components/LoadingSpinner.jsx
 import React from 'react';
-import './LoadingSpinner.css';
+import styles from './LoadingSpinner.module.css'; // Import as a module
 
 const LoadingSpinner = () => (
-  <div className="loading-spinner">
-    <div className="spinner"></div>
+  <div className={styles['loading-spinner']}>
+    <div className={styles.spinner}></div>
     <p>Loading Pokemon...</p>
   </div>
 );

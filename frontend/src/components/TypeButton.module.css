@@ -10,7 +10,14 @@
   cursor: pointer;
   transition: transform 0.1s;
 }
+
 .type-button.selected {
+  outline: 3px solid #333;
+  transform: scale(1.1);
+}
+
+/* Add standalone class for CSS Modules usage */
+.selected {
   outline: 3px solid #333;
   transform: scale(1.1);
 }
