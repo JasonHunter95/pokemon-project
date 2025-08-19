@@ -30,12 +30,12 @@ export default {
 };
 
 const basePokemon = {
-  id: 35,
-  name: 'clefairy',
-  types: ['fairy'],
+  id: 25,
+  name: 'pikachu`',
+  types: ['electric'],
   sprites: {
     front_default:
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
   },
 };
 
@@ -65,7 +65,10 @@ export const MissingSprite = {
       id: 'missing',
       name: 'MissingNo.',
       types: [],
-      sprites: { front_default: '' },
+      sprites: {
+        front_default:
+          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png',
+      },
     },
   },
   parameters: {
@@ -79,10 +82,24 @@ export const MissingSprite = {
 
 export const NoTypes = {
   args: {
-    pokemon: { ...basePokemon, id: 150, name: 'mewtwo', types: [] },
+    pokemon: {
+      ...basePokemon,
+      id: 0,
+      name: '???',
+      types: [],
+      sprites: {
+        front_default:
+          'http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png',
+      },
+    },
   },
   parameters: {
-    docs: { description: { story: 'Validates layout when no type chips are available.' } },
+    docs: {
+      description: {
+        story:
+          'Validates layout when no type chips are available. This ensures the card remains visually consistent.',
+      },
+    },
   },
 };
 
@@ -90,9 +107,13 @@ export const VeryLongName = {
   args: {
     pokemon: {
       ...basePokemon,
-      id: 999,
-      name: 'mr-mime-super-long-form-name-that-wraps',
-      types: ['psychic', 'fairy'],
+      id: 10228,
+      name: 'Toxtricity-low-key-gmax',
+      types: ['electric', 'poison'],
+      sprites: {
+        front_default:
+          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10228.png',
+      },
     },
   },
   parameters: {
