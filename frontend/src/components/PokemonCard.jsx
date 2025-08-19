@@ -1,7 +1,7 @@
 // frontend/src/components/PokemonCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './PokemonCard.css';
+import styles from './PokemonCard.module.css';
 
 function capitalize(s) {
   return (s || '').charAt(0).toUpperCase() + (s || '').slice(1);
@@ -31,16 +31,20 @@ export default function PokemonCard({
   const detailsHref = linkHref || `/pokemon/${id}`;
 
   return (
-    <article className={`pokemon-card ${className}`} aria-label={`${name} card`} {...rest}>
+    <article
+      className={`${styles['pokemon-card']} ${className}`}
+      aria-label={`${name} card`}
+      {...rest}
+    >
       <Link
         to={detailsHref}
-        className="card-link"
+        className={styles['card-link']}
         aria-label={`View details for ${capitalize(name)} (#${id})`}
         onClick={onOpen}
       >
-        <div className="image-wrap">
+        <div className={styles['image-wrap']}>
           <img
-            className="sprite"
+            className={styles.sprite}
             src={imgSrc}
             alt={
               imgSrc === placeholderSvg
@@ -52,17 +56,17 @@ export default function PokemonCard({
             height="128"
           />
         </div>
-        <h2 className="title" id={`pokemon-${id}-title`}>
-          <span className="id">#{id}</span> {capitalize(name)}
+        <h2 className={styles.title} id={`pokemon-${id}-title`}>
+          <span className={styles.id}>#{id}</span> {capitalize(name)}
         </h2>
       </Link>
 
-      <div className="types" aria-label="Types">
+      <div className={styles.types} aria-label="Types">
         {types.map((t) => (
           <button
             key={t}
             type="button"
-            className={`type-chip type-${t}`}
+            className={`${styles['type-chip']} ${styles[`type-${t}`]}`}
             onClick={() => onTypeClick?.(t)}
             aria-label={`Filter by ${t} type`}
           >

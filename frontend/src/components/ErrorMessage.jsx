@@ -1,12 +1,12 @@
 import React from 'react';
-import './ErrorMessage.css';
+import styles from './ErrorMessage.module.css';
 
 const ErrorMessage = ({ message, onRetry, showRetry = true }) => (
-  <div className="error-message">
+  <div className={styles.errorMessage} role="alert" aria-live="polite">
     <h3>⚠️ Something went wrong</h3>
     <p>{message}</p>
     {showRetry && onRetry && (
-      <button onClick={onRetry} className="retry-button">
+      <button type="button" onClick={onRetry} className={styles.retryButton}>
         🔄 Retry
       </button>
     )}
