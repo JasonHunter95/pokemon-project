@@ -3,7 +3,7 @@ setlocal
 set "OUT=repo-tree.txt"
 
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$ignore=@('node_modules','.git','dist','build','coverage');" ^
+  "$ignore=@('node_modules','.git','dist','build','coverage', '.ruff_cache', '.mypy_cache', '__pycache__', '_');" ^
   "function Show-Tree([string]$path='.',[string]$prefix=''){" ^
   "  $dirs  = Get-ChildItem -LiteralPath $path -Directory | Where-Object { $ignore -notcontains $_.Name };" ^
   "  $files = Get-ChildItem -LiteralPath $path -File;" ^

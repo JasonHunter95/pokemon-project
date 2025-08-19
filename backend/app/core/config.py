@@ -20,9 +20,6 @@ class Settings(BaseSettings):
     # AI Service Configuration (I might change this later to not be gemini but I think we'll see)
     gemini_api_key: str = ""
 
-    # Redis Configuration (default if not using docker, but I override it in docker-compose)
-    redis_url: str = "redis://localhost:6379"
-
     # Cache Configuration
     cache_ttl: int = 3600  # 1 hour in seconds
     max_cache_size: int = 1000  # Maximum number of cached items

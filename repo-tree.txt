@@ -1,9 +1,19 @@
 ﻿C:\Users\Jason Hunter\OneDrive\Desktop\PokemonStoryBook\pokemon-project
++---.husky
+|   pre-commit
 +---backend
-|   +---__pycache__
-|   |   main.cpython-311.pyc
+|   +---app
+|   |   +---api
+|   |   |   +---v1
+|   |   |   |   pokemon.py
+|   |   +---core
+|   |   |   config.py
+|   |   +---schemas
+|   |   |   pokemon.py
+|   |   +---services
+|   |   |   pokeapi.py
+|   |   main.py
 |   Dockerfile.backend.dev
-|   main.py
 |   README.backend.md
 |   requirements.txt
 +---frontend
@@ -11,23 +21,45 @@
 |   |   main.js
 |   |   preview.js
 |   +---public
-|   |   favicon.ico
 |   |   index.html
 |   |   manifest.json
+|   |   mockServiceWorker.js
+|   |   Pokeball.ico
+|   |   Pokeball.png
 |   +---src
 |   |   +---components
-|   |   |   button.css
-|   |   |   pokemon-card.css
-|   |   |   pokemon-grid.css
+|   |   |   ErrorMessage.jsx
+|   |   |   ErrorMessage.module.css
+|   |   |   LoadingSpinner.jsx
+|   |   |   LoadingSpinner.module.css
+|   |   |   Pagination.jsx
+|   |   |   Pagination.module.css
 |   |   |   PokemonCard.jsx
+|   |   |   PokemonCard.module.css
 |   |   |   PokemonCard.test.jsx
 |   |   |   PokemonCardGrid.jsx
-|   |   |   searchbar.css
+|   |   |   PokemonCardGrid.module.css
+|   |   |   PokemonList.jsx
+|   |   |   PokemonList.module.css
 |   |   |   SearchBar.jsx
+|   |   |   SearchBar.module.css
 |   |   |   TypeButton.jsx
+|   |   |   TypeButton.module.css
 |   |   |   TypeButtonGroup.jsx
+|   |   +---hooks
+|   |   |   usePokemon.js
+|   |   +---pages
+|   |   |   PokemonDetail.jsx
+|   |   |   PokemonDetail.module.css
+|   |   |   PokemonList.jsx
 |   |   +---stories
+|   |   |   ErrorMessage.stories.jsx
+|   |   |   LoadingSpinner.stories.jsx
+|   |   |   msw-handlers.js
+|   |   |   Pagination.stories.jsx
 |   |   |   PokemonCard.stories.jsx
+|   |   |   PokemonCardGrid.stories.jsx
+|   |   |   PokemonList.stories.jsx
 |   |   |   SearchBar.stories.js
 |   |   |   TypeButtonGroup.stories.js
 |   |   +---test
@@ -35,8 +67,9 @@
 |   |   |   |   handlers.js
 |   |   |   |   server.js
 |   |   |   factories.js
-|   |   api.js
-|   |   api.test.js
+|   |   |   renderWithRouter.js
+|   |   API.js
+|   |   API.test.js
 |   |   App.css
 |   |   App.integration.test.jsx
 |   |   App.js
@@ -46,14 +79,17 @@
 |   |   reportWebVitals.js
 |   |   setupTests.js
 |   .dockerignore
-|   .env
 |   Dockerfile.frontend.dev
-|   package-lock.json
 |   package.json
 |   README.frontend.md
 .env
+.env.example
 .gitignore
+.prettierignore
+.prettierrc.json
 docker-compose.yml
+package.json
+pyproject.toml
 README.md
 repo-tree.bat
-run-storybook.bat
+repo-tree.txt
