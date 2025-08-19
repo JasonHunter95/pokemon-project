@@ -62,21 +62,31 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
    git clone https://github.com/JasonHunter95/pokemon-project.git
 ```
 
-3. Navigate to the project directory:
+## ⚙️ Environment Configuration
+
+Before running the project, you need to set up your local environment variables.
+
+1.  **Create a `.env` file:** Copy the example template to a new file named `.env` in the root of the project.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+2.  Navigate to the project directory:
 
 ```bash
    cd pokemon-project
 ```
 
-4. Build and run the Docker containers:
+3. Build and run the Docker containers:
 
 ```bash
    docker-compose up --build
 ```
 
-5. Open your web browser and navigate to `http://localhost:3000` to view the frontend.
+4. Open your web browser and navigate to `http://localhost:3000` to view the frontend.
 
-6. The backend will be accessible at `http://localhost:8000`.
+5. The backend will be accessible at `http://localhost:8000`.
 
 ### Running the Project
 

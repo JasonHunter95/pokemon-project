@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     # External APIs
     pokeapi_base_url: str = "https://pokeapi.co/api/v2"
 
+    # Redis Configuration
+    redis_url: str = "redis://localhost:6379"
+
+    # AI Service Configuration (I might change this later to not be gemini but I think we'll see)
+    gemini_api_key: str = ""
+
     # Redis Configuration (default if not using docker, but I override it in docker-compose)
     redis_url: str = "redis://localhost:6379"
 
