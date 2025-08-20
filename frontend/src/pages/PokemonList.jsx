@@ -1,8 +1,11 @@
 // frontend/src/pages/PokemonList.jsx
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query'; // Import useQuery
+import { fetchTypes } from '../API'; // Import a function to fetch types
 import { usePokemonList } from '../hooks/usePokemon';
 import PokemonListComponent from '../components/PokemonList';
 import SearchBar from '../components/SearchBar';
+import TypeButtonGroup from '../components/TypeButtonGroup'; // Import the component
 import Pagination from '../components/Pagination';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -10,9 +13,15 @@ import ErrorMessage from '../components/ErrorMessage';
 const PokemonList = () => {
   const [filters, setFilters] = useState({
     search: '',
-    types: [],
+    types: [], // Add types to your filter state
     limit: 20,
     offset: 0,
+  });
+
+  // Fetch the list of all Pokemon types for the button group
+  const { data: typesData } = useQuery({
+    queryKey: ['types'],
+    queryFn: fetchTypes,
   });
 
   const { data, isLoading, isError, error } = usePokemonList(filters);
@@ -25,6 +34,11 @@ const PokemonList = () => {
     setFilters((prev) => ({ ...prev, search: '', offset: 0 }));
   };
 
+  // Add a handler for when the type selection changes
+  const handleTypeChange = (newTypes) => {
+    setFilters((prev) => ({ ...prev, types: newTypes, offset: 0 }));
+  };
+
   const handleNextPage = () => {
     setFilters((prev) => ({ ...prev, offset: prev.offset + prev.limit }));
   };
@@ -33,11 +47,27 @@ const PokemonList = () => {
     setFilters((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }));
   };
 
-  const isSearchMode = !!filters.search;
+  const isSearchMode = !!filters.search || filters.types.length > 0;
 
   return (
     <>
       <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearchMode={isSearchMode} />
+
+      {/* Render the TypeButtonGroup here */}
+      <div
+        style={{
+          marginBottom: '2rem',
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <TypeButtonGroup
+          types={typesData?.map((t) => t.name) || []}
+          onSelectionChange={handleTypeChange}
+          initialSelected={filters.types}
+        />
+      </div>
 
       {isError && <ErrorMessage message={error.message} onRetry={() => {}} showRetry={false} />}
 
@@ -47,7 +77,7 @@ const PokemonList = () => {
         <>
           <PokemonListComponent pokemon={data.results} isSearchMode={isSearchMode} />
 
-          {!isSearchMode && data.count > filters.limit && (
+          {data.count > filters.limit && (
             <Pagination
               pagination={{
                 ...filters,
@@ -65,7 +95,7 @@ const PokemonList = () => {
 
       {isSearchMode && !isLoading && data?.results.length === 0 && (
         <div className="no-results">
-          <p>No Pokemon found matching your search.</p>
+          <p>No Pokemon found matching your search and filter criteria.</p>
         </div>
       )}
     </>

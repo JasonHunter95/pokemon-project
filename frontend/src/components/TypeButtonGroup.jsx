@@ -1,103 +1,68 @@
-import React, { useEffect, useState } from 'react';
+// frontend/src/components/TypeButtonGroup.jsx
+import React, { useState, useEffect } from 'react';
 import TypeButton from './TypeButton';
 
-export default function TypeButtonGroup({
-  onTypeSelect,
-  onSelectionChange,
-  // Pass an array of strings or { type, color } objects
-  types: providedTypes,
-  initialSelected = [],
-}) {
+// Utility to create a consistent color palette for types
+const TYPE_COLORS = {
+  normal: '#A8A77A',
+  fire: '#F08030',
+  water: '#6890F0',
+  electric: '#F8D030',
+  grass: '#78C850',
+  ice: '#98D8D8',
+  fighting: '#C22E28',
+  poison: '#A040A0',
+  ground: '#E0C068',
+  flying: '#A98FF3',
+  psychic: '#F95587',
+  bug: '#A6B91A',
+  rock: '#B8A038',
+  ghost: '#735797',
+  dragon: '#6F35FC',
+  dark: '#705746',
+  steel: '#B7B7CE',
+  fairy: '#EE99AC',
+};
+
+const TypeButtonGroup = ({ types = [], initialSelected = [], onSelectionChange }) => {
   const [selectedTypes, setSelectedTypes] = useState(initialSelected);
-  const [types, setTypes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // shallow equality helpers
-  const eqArray = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
-  const eqTypes = (a, b) =>
-    a.length === b.length && a.every((v, i) => v.type === b[i].type && v.color === b[i].color);
-
-  const normalize = (arr) =>
-    Array.isArray(arr)
-      ? arr.map((item) => (typeof item === 'string' ? { type: item, color: undefined } : item))
-      : [];
-
+  // When the initialSelected prop changes from the parent, update the internal state
   useEffect(() => {
-    // If types are provided, skip network entirely
-    if (providedTypes && providedTypes.length > 0) {
-      const next = normalize(providedTypes);
-      setTypes((prev) => (eqTypes(prev, next) ? prev : next));
-      setLoading(false);
-      setError(null);
-      return; // stop here, do not fetch
-    }
-
-    const controller = new AbortController();
-    async function loadTypes() {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await fetch('/pokemon/types', { signal: controller.signal });
-        if (!res.ok) throw new Error(`Failed to fetch types: ${res.status}`);
-        const data = await res.json();
-        const next = normalize(data);
-        setTypes((prev) => (eqTypes(prev, next) ? prev : next));
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error(err);
-          setError('Failed to load Pokémon types.');
-          setTypes((prev) => (prev.length ? [] : prev));
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadTypes();
-    return () => controller.abort();
-  }, [providedTypes]);
-
-  useEffect(() => {
-    // Keep selected in sync, limit to two and to known types if provided
-    const allowed = types.length ? new Set(types.map((t) => t.type)) : null;
-    const next = (initialSelected || [])
-      .filter((t) => (allowed ? allowed.has(t) : true))
-      .slice(0, 2);
-
-    // Only update if it actually changes
-    setSelectedTypes((prev) => (eqArray(prev, next) ? prev : next));
-  }, [initialSelected, types]);
+    setSelectedTypes(initialSelected);
+  }, [initialSelected]);
 
   const handleTypeClick = (type) => {
-    setSelectedTypes((prev) => {
-      let next;
-      if (prev.includes(type)) {
-        next = prev.filter((t) => t !== type);
-      } else if (prev.length < 2) {
-        next = [...prev, type];
-      } else {
-        next = [prev[1], type]; // replace oldest
-      }
-      onTypeSelect && onTypeSelect(type);
-      onSelectionChange && onSelectionChange(next);
-      return next;
-    });
+    let next;
+    if (selectedTypes.includes(type)) {
+      next = selectedTypes.filter((t) => t !== type);
+    } else if (selectedTypes.length < 2) {
+      next = [...selectedTypes, type];
+    } else {
+      next = [selectedTypes[1], type]; // Replace the oldest selection
+    }
+    setSelectedTypes(next);
+    onSelectionChange?.(next); // Notify the parent component of the change
   };
 
-  if (loading) return <div role="status">Loading types…</div>;
-  if (error) return <div role="alert">{error}</div>;
+  if (!types.length) {
+    // You can show a simple loading state or nothing while types are being fetched by the parent
+    return <p style={{ color: '#6c757d' }}>Loading types...</p>;
+  }
 
   return (
     <div>
-      {types.map(({ type, color }) => (
+      {types.map((type) => (
         <TypeButton
           key={type}
           type={type}
-          color={color || '#B7B7CE'}
+          color={TYPE_COLORS[type] || '#B7B7CE'} // Fallback color
           selected={selectedTypes.includes(type)}
-          onClick={handleTypeClick}
+          onClick={() => handleTypeClick(type)}
         />
       ))}
     </div>
   );
-}
+};
+
+export default TypeButtonGroup;
