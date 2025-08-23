@@ -29,6 +29,7 @@ async def get_pokemon_types():
 async def get_pokemon(
     search: Optional[str] = Query(None),
     types: Optional[str] = Query(None),
+    stats: Optional[str] = Query(None),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     service: PokeAPIService = Depends(get_pokeapi_service),
@@ -38,9 +39,16 @@ async def get_pokemon(
     """
     try:
         parsed_types = [t.strip().lower() for t in types.split(",")] if types else None
+        parsed_stats = None
+        if stats:
+            try:
+                import json
+                parsed_stats = json.loads(stats)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Invalid stats filter format")
 
         pokemon_data = await service.get_pokemon_list(
-            search=search, types=parsed_types, limit=limit, offset=offset
+            search=search, types=parsed_types, stats=parsed_stats, limit=limit, offset=offset
         )
         return pokemon_data
     except httpx.RequestError as e:

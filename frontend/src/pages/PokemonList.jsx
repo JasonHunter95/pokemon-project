@@ -6,6 +6,7 @@ import { usePokemonList } from '../hooks/usePokemon';
 import PokemonListComponent from '../components/PokemonList';
 import SearchBar from '../components/SearchBar';
 import TypeButtonGroup from '../components/TypeButtonGroup'; // Import the component
+import StatFilterGroup from '../components/StatFilterGroup';
 import Pagination from '../components/Pagination';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
@@ -14,6 +15,7 @@ const PokemonList = () => {
   const [filters, setFilters] = useState({
     search: '',
     types: [], // Add types to your filter state
+    stats: {}, // Add stats to your filter state
     limit: 20,
     offset: 0,
   });
@@ -32,12 +34,29 @@ const PokemonList = () => {
 
   // Clears both the search and type filters
   const handleClearSearch = () => {
-    setFilters((prev) => ({ ...prev, search: '', types: [], offset: 0 }));
+    setFilters((prev) => ({ ...prev, search: '', types: [], stats: {}, offset: 0 }));
   };
 
   // Add a handler for when the type selection changes
   const handleTypeChange = (newTypes) => {
     setFilters((prev) => ({ ...prev, types: newTypes, offset: 0 }));
+  };
+
+  // Add a handler for when the stat filters change
+  const handleStatsChange = (newStats) => {
+    // Filter out stats that are at their default values (5-255)
+    const activeStats = {};
+    Object.entries(newStats).forEach(([statName, statRange]) => {
+      if (statRange.min !== 5 || statRange.max !== 255) {
+        activeStats[statName] = statRange;
+      }
+    });
+    setFilters((prev) => ({ ...prev, stats: activeStats, offset: 0 }));
+  };
+
+  // Add a handler to clear stat filters
+  const handleClearStats = () => {
+    setFilters((prev) => ({ ...prev, stats: {}, offset: 0 }));
   };
 
   const handleNextPage = () => {
@@ -48,7 +67,8 @@ const PokemonList = () => {
     setFilters((prev) => ({ ...prev, offset: Math.max(0, prev.offset - prev.limit) }));
   };
 
-  const isSearchMode = !!filters.search || filters.types.length > 0;
+  const isSearchMode =
+    !!filters.search || filters.types.length > 0 || Object.keys(filters.stats).length > 0;
 
   const filteredTypes =
     typesData?.filter((t) => t.name !== 'stellar' && t.name !== 'unknown').map((t) => t.name) || [];
@@ -72,6 +92,13 @@ const PokemonList = () => {
           initialSelected={filters.types}
         />
       </div>
+
+      {/* Render the StatFilterGroup here */}
+      <StatFilterGroup
+        stats={filters.stats}
+        onStatsChange={handleStatsChange}
+        onClear={handleClearStats}
+      />
 
       {isError && <ErrorMessage message={error.message} onRetry={() => {}} showRetry={false} />}
 

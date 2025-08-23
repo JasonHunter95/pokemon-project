@@ -37,11 +37,19 @@ class PokeAPIService:
             response = await client.get(url)
             response.raise_for_status()
             details = response.json()
+
+            # Extract stats for filtering
+            stats = {}
+            for stat in details["stats"]:
+                stat_name = stat["stat"]["name"]
+                stats[stat_name] = stat["base_stat"]
+
             return {
                 "id": details["id"],
                 "name": details["name"],
                 "types": [t["type"]["name"] for t in details["types"]],
                 "sprites": {"front_default": details["sprites"]["front_default"]},
+                "stats": stats,
             }
         except httpx.HTTPStatusError:
             return None
@@ -73,6 +81,7 @@ class PokeAPIService:
         self,
         search: Optional[str] = None,
         types: Optional[list[str]] = None,
+        stats: Optional[dict[str, dict[str, int]]] = None,
         limit: int = 20,
         offset: int = 0,
     ) -> dict[str, Any]:
@@ -80,7 +89,12 @@ class PokeAPIService:
         Gets a list of Pokémon, using Redis for caching and optimized filtering.
         """
         # Create a unique cache key based on all query parameters
-        cache_key = f"pokemon_list:search={search or ''}:types={','.join(types or [])}:limit={limit}:offset={offset}"
+        stats_key = json.dumps(stats) if stats else ""
+        types_key = ','.join(types or [])
+        cache_key = (
+            f"pokemon_list:search={search or ''}:types={types_key}:"
+            f"stats={stats_key}:limit={limit}:offset={offset}"
+        )
 
         # 1. Check cache first
         try:
@@ -125,12 +139,39 @@ class PokeAPIService:
                     p for p in pokemon_references if search.lower() in p["name"].lower()
                 ]
 
-            count = len(pokemon_references)
-            paginated_refs = pokemon_references[offset : offset + limit]
+            # For stat filtering, we need to fetch all details first, then filter
+            if stats:
+                # Fetch all details for stat filtering
+                detail_tasks = [self._fetch_pokemon_details(client, p["url"]) for p in pokemon_references]
+                details_results = await asyncio.gather(*detail_tasks)
+                all_pokemon_details = [p for p in details_results if p is not None]
 
-            detail_tasks = [self._fetch_pokemon_details(client, p["url"]) for p in paginated_refs]
-            details_results = await asyncio.gather(*detail_tasks)
-            final_pokemon_details = [p for p in details_results if p is not None]
+                # Apply stat filtering
+                filtered_pokemon = []
+                for pokemon in all_pokemon_details:
+                    matches_stats = True
+                    for stat_name, stat_range in stats.items():
+                        if stat_name in pokemon.get("stats", {}):
+                            pokemon_stat = pokemon["stats"][stat_name]
+                            min_val = stat_range.get("min", 0)
+                            max_val = stat_range.get("max", 255)
+                            if not (min_val <= pokemon_stat <= max_val):
+                                matches_stats = False
+                                break
+                    if matches_stats:
+                        filtered_pokemon.append(pokemon)
+
+                # Apply pagination after stat filtering
+                count = len(filtered_pokemon)
+                final_pokemon_details = filtered_pokemon[offset : offset + limit]
+            else:
+                # No stat filtering, use normal pagination
+                count = len(pokemon_references)
+                paginated_refs = pokemon_references[offset : offset + limit]
+
+                detail_tasks = [self._fetch_pokemon_details(client, p["url"]) for p in paginated_refs]
+                details_results = await asyncio.gather(*detail_tasks)
+                final_pokemon_details = [p for p in details_results if p is not None]
 
             # 3. Construct the final response object
             response_data = {

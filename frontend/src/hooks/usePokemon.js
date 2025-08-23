@@ -3,12 +3,12 @@ import { fetchPokemon, fetchPokemonDetail } from '../API';
 
 /**
  * Custom hook to fetch a paginated and filterable list of Pokémon.
- * @param {{ search?: string, types?: string[], limit?: number, offset?: number }} filters
+ * @param {{ search?: string, types?: string[], stats?: object, limit?: number, offset?: number }} filters
  */
-export function usePokemonList({ search, types, limit = 20, offset = 0 } = {}) {
+export function usePokemonList({ search, types, stats, limit = 20, offset = 0 } = {}) {
   return useQuery({
-    queryKey: ['pokemon', { search, types, limit, offset }],
-    queryFn: () => fetchPokemon({ search, types, limit, offset }),
+    queryKey: ['pokemon', { search, types, stats, limit, offset }],
+    queryFn: () => fetchPokemon({ search, types, stats, limit, offset }),
     // keepPreviousData: true, // uncomment for a smoother pagination experience
   });
 }

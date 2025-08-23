@@ -1,0 +1,39 @@
+.statSlider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: sans-serif;
+  min-width: 180px;
+}
+
+.label {
+  text-transform: capitalize;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input {
+  width: 60px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: 2px solid #64b5f6;
+  border-color: #64b5f6;
+}
+
+.separator {
+  color: #888;
+}

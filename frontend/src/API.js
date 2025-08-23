@@ -9,6 +9,7 @@ export async function fetchTypes() {
 export async function fetchPokemon({
   search = '',
   types = [],
+  stats = null,
   limit = 20,
   offset = 0,
   match = 'all',
@@ -18,6 +19,9 @@ export async function fetchPokemon({
   if (types?.length) {
     params.set('types', types.slice(0, 2).join(','));
     params.set('match', match); // 'all' (AND) or 'any' (OR)
+  }
+  if (stats) {
+    params.set('stats', JSON.stringify(stats));
   }
   params.set('limit', String(limit));
   params.set('offset', String(offset));
