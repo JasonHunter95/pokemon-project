@@ -30,8 +30,9 @@ const PokemonList = () => {
     setFilters((prev) => ({ ...prev, search: query, offset: 0 }));
   };
 
+  // Clears both the search and type filters
   const handleClearSearch = () => {
-    setFilters((prev) => ({ ...prev, search: '', offset: 0 }));
+    setFilters((prev) => ({ ...prev, search: '', types: [], offset: 0 }));
   };
 
   // Add a handler for when the type selection changes
@@ -49,6 +50,9 @@ const PokemonList = () => {
 
   const isSearchMode = !!filters.search || filters.types.length > 0;
 
+  const filteredTypes =
+    typesData?.filter((t) => t.name !== 'stellar' && t.name !== 'unknown').map((t) => t.name) || [];
+
   return (
     <>
       <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearchMode={isSearchMode} />
@@ -63,7 +67,7 @@ const PokemonList = () => {
         }}
       >
         <TypeButtonGroup
-          types={typesData?.map((t) => t.name) || []}
+          types={filteredTypes}
           onSelectionChange={handleTypeChange}
           initialSelected={filters.types}
         />
