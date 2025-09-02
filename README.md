@@ -1,10 +1,10 @@
-# Pokémon Data Passion Project using Python and React (Pokémon API)
+# Pokemon Data Passion Project using Python and React (PokeAPI)
 
-This project is a Pokémon-themed application built with Python for the backend and React for the frontend. It utilizes the Pokémon API (PokeAPI) to fetch data about various Pokémon, which is then displayed in a user-friendly interface. The project also incorporates Storybook for developing and testing UI components in isolation.
+This project is a Pokemon-themed application built with Python for the backend and React for the frontend. It utilizes the PokeAPI to fetch data about various Pokemon, which is then displayed in a user-friendly interface. The project also incorporates Storybook for developing and testing UI components in isolation.
 
 ## Features
 
-- Fetch and display Pokémon data using the Pokémon API (PokeAPI)
+- Fetch and display Pokemon data using the PokeAPI
 - User-friendly interface built with React
 - Isolated component development and testing using Storybook
 - Search by name or ID using the search bar.
@@ -12,7 +12,7 @@ This project is a Pokémon-themed application built with Python for the backend 
 - Search for moves using the search bar.
 - Search for items using the search bar.
 - Filter by type using the type buttons (up to two types maximum)
-- Filter by stats using a set of sliders that contain min and max values indicative of the range of Pokémon stats.
+- Filter by stats using a set of sliders that contain min and max values indicative of the range of Pokemon stats.
 - Combo filters for type and stats
 - Card-based results grid (image, name, ID, and type chips)
 - Inline actions on cards: type chip refines filters; card/name links to details (stub link until routing)
@@ -23,10 +23,10 @@ This project is a Pokémon-themed application built with Python for the backend 
 
 ### Type Buttons
 
-These buttons represent the different Pokémon types (e.g., Fire, Water, Grass) and can be toggled on or off. Up to two buttons may be active at a time.
-This allows users to filter Pokémon by type. There are only type combinations of two types, so the buttons are designed to handle this limitation.
+These buttons represent the different Pokemon types (e.g., Fire, Water, Grass) and can be toggled on or off. Up to two buttons may be active at a time.
+This allows users to filter Pokemon by type. There are only type combinations of two types, so the buttons are designed to handle this limitation.
 In the event that a user tries to select a third type, the first selected type will be deselected automatically.
-If a user selects only one type, all Pokémon of that type will be displayed, including Pokémon with that type as a secondary type.
+If a user selects only one type, all Pokemon of that type will be displayed, including Pokemon with that type as a secondary type.
 
 ### Active Button State
 
@@ -34,13 +34,13 @@ When a button is active, it will have a distinct style to indicate that it is se
 
 ### Button Styles
 
-The buttons are styled to be visually appealing and consistent with the Pokémon theme. They change appearance when active or inactive, providing clear feedback to the user.
+The buttons are styled to be visually appealing and consistent with the Pokemon theme. They change appearance when active or inactive, providing clear feedback to the user.
 
 ### Card Components
 
-- Pokémon cards display a sprite, ID, name, and clickable type chips in a responsive grid.
+- Pokemon cards display a sprite, ID, name, and clickable type chips in a responsive grid.
 - Missing sprites are handled with a placeholder image.
-- Cards and names link to “/pokemon/:id” (stub until routing is added).
+- Cards and names link to `/pokemon/:id` (stub until routing is added).
 
 ## Getting Started
 
@@ -53,7 +53,7 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
 
 ### Installation
 
-### You'll need Docker Desktop installed to run the project
+Note: You'll need Docker Desktop installed to run the project.
 
 1. Ensure you have Docker Desktop installed and running.
 2. Clone the repository:
@@ -62,11 +62,11 @@ The buttons are styled to be visually appealing and consistent with the Pokémon
    git clone https://github.com/JasonHunter95/pokemon-project.git
 ```
 
-## ⚙️ Environment Configuration
+## Environment Configuration
 
 Before running the project, you need to set up your local environment variables.
 
-1.  **Create a `.env` file:** Copy the example template to a new file named `.env` in the root of the project.
+1.  Create a `.env` file: Copy the example template to a new file named `.env` in the root of the project.
 
     ```bash
     cp .env.example .env

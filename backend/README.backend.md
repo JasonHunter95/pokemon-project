@@ -82,34 +82,53 @@ For local development, you can run the FastAPI application using Uvicorn:
    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-Using Docker:
-The backend can be run in a Docker container using the provided Dockerfile:
+Using Docker / Docker Compose:
 
-1. Build the Docker image:
+The recommended way to run the backend is via the root `docker-compose.yml`,
+which also brings up Redis and (optionally) the frontend.
+
+- From the project root, to run only the backend (and Redis):
+
+  ```bash
+  docker-compose up --build backend
+  ```
+
+- To run the full stack (frontend, backend, redis):
+
+  ```bash
+  docker-compose up --build
+  ```
+
+If you prefer building only the backend image directly from the `backend/` dir:
+
+1. Build the image
 
    ```bash
    docker build -f Dockerfile.backend.dev -t pokemon-backend .
    ```
 
-2. Run the Docker container:
+2. Run the container (adjust `REDIS_URL` for your environment)
 
    ```bash
-   docker run -p 8000:8000 pokemon-backend
+   docker run --rm -p 8000:8000 -e REDIS_URL=redis://host.docker.internal:6379 pokemon-backend
    ```
-
-Or using docker-compose from the project's root:
-
-```bash
-docker-compose -f docker-compose.backend.dev.yml up --build
-```
 
 ## Configuration
 
-The backend supports the following environment variables:
+The backend reads configuration via environment variables (also supported from a `.env` file):
 
-- **POKEAPI_BASE**: The base URL for the PokeAPI (default: `https://pokeapi.co/api/v2/`).
-- **CACHE_TTL_SECONDS**: The time-to-live for cached responses (default: `300` seconds).
-- **USE_SAMPLE_DATA**: Use sample data instead of fetching from the PokeAPI (default: `false`).
+- `POKEAPI_BASE_URL` (string): Base URL for PokeAPI. Default: `https://pokeapi.co/api/v2`.
+- `REDIS_URL` (string): Redis connection URL. Default: `redis://localhost:6379`.
+  - In Docker Compose, this is set to `redis://redis:6379` and the `redis` service is started alongside the backend.
+- `CACHE_TTL` (integer seconds): Time-to-live for cached responses. Default: `3600`.
+- `HTTP_TIMEOUT` (integer seconds): HTTP client timeout for upstream requests. Default: `30`.
+- `GEMINI_API_KEY` (string, optional): API key for Gemini (not required for core functionality).
+- `ALLOWED_ORIGINS` (list string, optional): CORS allowed origins. Example JSON list: `['http://localhost:3000','http://127.0.0.1:3000']`.
+
+Notes:
+
+- The current API routes are mounted at `/pokemon` (no `/api/v1` prefix). The `api_v1_prefix` setting exists but is not applied in `main.py`.
+- There is no `USE_SAMPLE_DATA` flag in the current implementation; all data is fetched from PokeAPI and cached in Redis.
 
 ## API Documentation
 
