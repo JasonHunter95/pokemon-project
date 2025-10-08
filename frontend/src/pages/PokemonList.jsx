@@ -1,5 +1,5 @@
 // frontend/src/pages/PokemonList.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query'; // Import useQuery
 import { fetchTypes } from '../API'; // Import a function to fetch types
 import { usePokemonList } from '../hooks/usePokemon';
@@ -42,17 +42,34 @@ const PokemonList = () => {
     setFilters((prev) => ({ ...prev, types: newTypes, offset: 0 }));
   };
 
-  // Add a handler for when the stat filters change
-  const handleStatsChange = (newStats) => {
-    // Filter out stats that are at their default values (5-255)
-    const activeStats = {};
-    Object.entries(newStats).forEach(([statName, statRange]) => {
-      if (statRange.min !== 5 || statRange.max !== 255) {
-        activeStats[statName] = statRange;
+  // Debounce timer for stats changes
+  const statsDebounceRef = useRef(null);
+
+  // Debounced handler for stat filters
+  const handleStatsChange = useCallback(
+    (newStats) => {
+      if (statsDebounceRef.current) {
+        clearTimeout(statsDebounceRef.current);
       }
-    });
-    setFilters((prev) => ({ ...prev, stats: activeStats, offset: 0 }));
-  };
+      statsDebounceRef.current = setTimeout(() => {
+        const activeStats = {};
+        Object.entries(newStats).forEach(([statName, statRange]) => {
+          if (statRange.min !== 5 || statRange.max !== 255) {
+            activeStats[statName] = statRange;
+          }
+        });
+        setFilters((prev) => ({ ...prev, stats: activeStats, offset: 0 }));
+      }, 300);
+    },
+    [setFilters]
+  );
+
+  // Clear any pending debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (statsDebounceRef.current) clearTimeout(statsDebounceRef.current);
+    };
+  }, []);
 
   // Add a handler to clear stat filters
   const handleClearStats = () => {

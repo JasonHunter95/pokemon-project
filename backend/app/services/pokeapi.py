@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 import redis.asyncio as redis
@@ -17,21 +17,21 @@ class PokeAPIService:
     """Service for interacting with the PokeAPI, with Redis caching."""
 
     def __init__(self):
-        self.base_url = settings.pokeapi_base_url
-        self.timeout = settings.http_timeout
+        self.base_url = settings.pokeapi_base_url # Base URL for PokeAPI
+        self.timeout = settings.http_timeout # Timeout for HTTP requests
         self.cache_ttl = settings.cache_ttl  # Use TTL from settings
 
     async def _get_pokemon_for_type(
         self, client: httpx.AsyncClient, type_name: str
     ) -> list[dict[str, str]]:
-        """Fetches a list of pokemon references for a given type from API."""
+        """Fetches a list of pokemon references for a given type from the PokeAPI."""
         response = await client.get(f"{self.base_url}/type/{type_name}")
         response.raise_for_status()
         return [p["pokemon"] for p in response.json()["pokemon"]]
 
     async def _fetch_pokemon_details(
         self, client: httpx.AsyncClient, url: str
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Fetches and shapes full details for a single Pokémon from API."""
         try:
             response = await client.get(url)
@@ -53,6 +53,7 @@ class PokeAPIService:
             }
         except httpx.HTTPStatusError:
             return None
+
     async def get_pokemon_detail(self, name_or_id: str) -> dict[str, Any]:
         """Fetch a single Pokémon detail (cached)."""
         cache_key = f"pokemon_detail:{name_or_id}"
@@ -79,9 +80,9 @@ class PokeAPIService:
 
     async def get_pokemon_list(
         self,
-        search: Optional[str] = None,
-        types: Optional[list[str]] = None,
-        stats: Optional[dict[str, dict[str, int]]] = None,
+        search: str | None = None,
+        types: list[str] | None = None,
+        stats: dict[str, dict[str, int]] | None = None,
         limit: int = 20,
         offset: int = 0,
     ) -> dict[str, Any]:

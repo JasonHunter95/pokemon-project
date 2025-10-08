@@ -1,53 +1,95 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './StatSlider.module.css';
+
+const MIN_STAT = 5;
+const MAX_STAT = 255;
 
 const StatSlider = ({ statName, value, onChange }) => {
   // Format stat name for display (e.g., "special-attack" -> "Special Attack")
-  const displayName = statName
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  const displayName = useMemo(
+    () =>
+      statName
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' '),
+    [statName]
+  );
 
-  const handleMinChange = (e) => {
-    const newMin = Math.max(5, parseInt(e.target.value, 10) || 5);
-    if (newMin <= value.max) {
-      onChange({ ...value, min: newMin });
+  const clamp = (val) => Math.min(Math.max(val, MIN_STAT), MAX_STAT);
+
+  const handleMinChange = (event) => {
+    const parsed = clamp(parseInt(event.target.value, 10) || MIN_STAT);
+    const nextMin = Math.min(parsed, value.max);
+    if (nextMin !== value.min) {
+      onChange({ ...value, min: nextMin });
     }
   };
 
-  const handleMaxChange = (e) => {
-    const newMax = Math.min(255, parseInt(e.target.value, 10) || 255);
-    if (newMax >= value.min) {
-      onChange({ ...value, max: newMax });
+  const handleMaxChange = (event) => {
+    const parsed = clamp(parseInt(event.target.value, 10) || MAX_STAT);
+    const nextMax = Math.max(parsed, value.min);
+    if (nextMax !== value.max) {
+      onChange({ ...value, max: nextMax });
     }
   };
+
+  const [minPercent, highlightWidth] = useMemo(() => {
+    const range = MAX_STAT - MIN_STAT;
+    const minPct = ((value.min - MIN_STAT) / range) * 100;
+    const maxPct = ((value.max - MIN_STAT) / range) * 100;
+    return [minPct, maxPct, Math.max(maxPct - minPct, 0)];
+  }, [value.min, value.max]);
+
+  const sliderIdBase = `stat-${statName}`;
 
   return (
     <div className={styles.statSlider}>
-      <label htmlFor={`${statName}-min`} className={styles.label}>
-        {displayName}
-      </label>
-      <div className={styles.inputs}>
+      <div className={styles.header}>
+        <label className={styles.label} htmlFor={`${sliderIdBase}-min`}>
+          {displayName}
+        </label>
+        <div className={styles.valueLabel}>
+          <span>{value.min}</span>
+          <span aria-hidden="true">–</span>
+          <span>{value.max}</span>
+        </div>
+      </div>
+
+      <div className={styles.sliderWrapper}>
+        <div className={styles.track} />
+        <div
+          className={styles.highlight}
+          style={{ left: `${minPercent}%`, width: `${highlightWidth}%` }}
+        />
+
         <input
-          type="number"
-          id={`${statName}-min`}
-          min="5"
-          max="255"
+          type="range"
+          min={MIN_STAT}
+          max={MAX_STAT}
+          step="1"
           value={value.min}
           onChange={handleMinChange}
-          aria-label={`${statName} min value`}
-          className={styles.input}
+          className={`${styles.range} ${styles.rangeMin}`}
+          aria-label={`${displayName} minimum`}
+          id={`${sliderIdBase}-min`}
         />
-        <span className={styles.separator}>-</span>
+
         <input
-          type="number"
-          min="5"
-          max="255"
+          type="range"
+          min={MIN_STAT}
+          max={MAX_STAT}
+          step="1"
           value={value.max}
           onChange={handleMaxChange}
-          aria-label={`${statName} max value`}
-          className={styles.input}
+          className={`${styles.range} ${styles.rangeMax}`}
+          aria-label={`${displayName} maximum`}
+          id={`${sliderIdBase}-max`}
         />
+      </div>
+
+      <div className={styles.scale}>
+        <span>{MIN_STAT}</span>
+        <span>{MAX_STAT}</span>
       </div>
     </div>
   );
