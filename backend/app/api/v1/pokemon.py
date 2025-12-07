@@ -1,4 +1,3 @@
-from typing import Optional
 
 import httpx
 from app.services.pokeapi import PokeAPIService
@@ -27,9 +26,9 @@ async def get_pokemon_types():
 
 @router.get("")
 async def get_pokemon(
-    search: Optional[str] = Query(None),
-    types: Optional[str] = Query(None),
-    stats: Optional[str] = Query(None),
+    search: str | None = Query(None),
+    types: str | None = Query(None),
+    stats: str | None = Query(None),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     service: PokeAPIService = Depends(get_pokeapi_service),
@@ -53,6 +52,8 @@ async def get_pokemon(
         return pokemon_data
     except httpx.RequestError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise  # Re-raise HTTPExceptions (e.g., 400 for invalid stats)
     except Exception:
         # Generic error for other unexpected issues
         raise HTTPException(status_code=500, detail="An internal server error occurred.")

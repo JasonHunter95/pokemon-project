@@ -8,3 +8,9 @@ black
 ruff
 mypy
 redis
+
+# Testing
+pytest==8.3.5
+pytest-asyncio==0.25.0
+pytest-xdist==3.5.0
+fakeredis==2.28.0

@@ -139,6 +139,12 @@ cd frontend
 npm test
 ```
 
+- Backend tests with pytest (inside Docker):
+
+```bash
+docker compose exec backend python -m pytest tests/ -v
+```
+
 ### Configuration
 
 - Frontend: `REACT_APP_API_BASE` (default: `http://localhost:8000`)
