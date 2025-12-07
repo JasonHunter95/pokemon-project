@@ -9,13 +9,13 @@
     "format": "prettier --write .",
     "lint": "npm run lint:js && npm run lint:py",
     "lint:js": "npm --prefix frontend run lint",
-    "lint:py": "ruff check ./backend --fix --unsafe-fixes",
+    "lint:py": "python3 -m ruff check ./backend --fix --unsafe-fixes",
     "prepare": "husky",
     "storybook": "npm --prefix frontend run storybook"
   },
   "lint-staged": {
     "*": "prettier --write --ignore-unknown",
     "frontend/src/**/*.{js,jsx}": "npm --prefix frontend exec -- eslint --max-warnings=0 --fix",
-    "backend/**/*.py": "python -m ruff check --fix --unsafe-fixes"
+    "backend/**/*.py": "python3 -m ruff check --fix --unsafe-fixes"
   }
 }
